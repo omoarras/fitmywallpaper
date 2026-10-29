@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fit My Wallpaper – Make Any Photo Fit Your Phone in HD &amp; 4K</title>
 <meta name="description" content="Convert any low quality photo into high 4K to match your device. No stretching, no blur – pick your phone or tablet and get a perfect wallpaper in one tap.">
-<link rel="canonical" href="https://fitmywallpaper.vercel.app/">
+<link rel="canonical" href="https://fit-my-wallpaper.vercel.app/">
 <meta name="theme-color" content="#6a2bd9">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Fit My Wallpaper – Any Photo, Perfect on Your Screen">
 <meta property="og:description" content="Convert any low quality photo into high 4K to match your device.">
-<meta property="og:url" content="https://fitmywallpaper.vercel.app/">
+<meta property="og:url" content="https://fit-my-wallpaper.vercel.app/">
 <meta name="twitter:card" content="summary">
 
 <script type="application/ld+json">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Fit My Wallpaper",
-  "url": "https://fitmywallpaper.vercel.app/",
+  "url": "https://fit-my-wallpaper.vercel.app/",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Any",
   "description": "Convert any low quality photo into high 4K to match your device. Resize, change orientation and fit wallpapers for iPhone, Samsung, iPad and more without stretching or losing quality."
@@ -263,7 +263,8 @@ function refreshUI() {
   const d = DEVICES[sel.value];
   const custom = d[1] === "custom";
   $("custom").style.display = custom ? "block" : "none";
-  const fixedLandscape = Array.isArray(d) && typeof d[1] === "number" && d[1] > d[2];
+  const desktopAuto = d[1] === "auto" && !autoSize()[2];
+  const fixedLandscape = desktopAuto || (typeof d[1] === "number" && d[1] > d[2]);
   $("orient").style.display = custom || fixedLandscape ? "none" : "flex";
   const [w, h] = currentSize();
   $("sizeHint").textContent = w >= 200 && h >= 200 ? `Your wallpaper will be ${w} × ${h} pixels.` : "Type a width and height (at least 200).";
