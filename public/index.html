@@ -114,12 +114,13 @@ body{top:0!important}
 
 /* Pawlo guide */
 .guide{position:sticky;top:20px;display:flex;flex-direction:column;align-items:center;padding-top:30px}
-.guide img{width:min(320px,100%);height:auto;transition:opacity .25s}
+.guide img{width:min(250px,100%);height:auto;transition:opacity .25s}
+@media (min-width:901px){.guide img.flip{transform:scaleX(-1)}}
 .bubble{position:relative;background:var(--paper);border:2px solid var(--ink);border-radius:22px;padding:14px 18px;font-family:var(--hand);font-size:22px;line-height:1.3;max-width:320px;margin-bottom:6px}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-12px;width:20px;height:20px;background:var(--paper);border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateX(-50%) rotate(45deg)}
 @media (max-width:900px){
   .guide{position:static;flex-direction:row-reverse;align-items:flex-end;justify-content:flex-end;gap:6px;padding-top:0;margin-bottom:-6px;order:-1}
-  .guide img{width:104px;flex:none}
+  .guide img{width:84px;flex:none}
   .bubble{font-size:19px;padding:10px 14px;margin-bottom:28px;max-width:none;flex:1}
   .bubble::after{left:auto;right:-12px;bottom:18px;transform:rotate(-45deg)}
 }
@@ -445,7 +446,7 @@ footer a{color:var(--ink);text-underline-offset:3px}
 
   <aside class="guide" aria-live="polite">
     <div class="bubble" id="bubble">Hi, I'm Pawlo! Pick a photo and I'll make it fit your screen.</div>
-    <img id="guideImg" src="/brand/pawlo-pointing.webp" alt="Pawlo the dog" width="320" height="320">
+    <img id="guideImg" class="flip" src="/brand/pawlo-pointing.webp" alt="Pawlo the dog" width="320" height="320">
   </aside>
 </main>
 
@@ -553,6 +554,7 @@ function say(text, pose = "pointing") {
   if (b.textContent !== text) { b.textContent = text; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
   const src = `/brand/${POSES[pose]}.webp`;
   if (!img.src.endsWith(src)) img.src = src;
+  img.classList.toggle("flip", pose === "pointing");
 }
 function guideForState() {
   if (!photoDataUrl) return say("Hi, I'm Pawlo! Pick a photo and I'll make it fit your screen.");
