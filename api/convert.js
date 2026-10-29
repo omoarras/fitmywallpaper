@@ -98,7 +98,7 @@ export default async function handler(req, res) {
       console.error("OpenAI error", data);
       const msg = data?.error?.code === "moderation_blocked"
         ? "This photo can't be processed. Please try another."
-        : "The image service had a problem. Please try again.";
+        : "The image service had a problem: " + (data?.error?.message || r.status);
       return res.status(502).json({ error: msg });
     }
     const b64 = data?.data?.[0]?.b64_json;
