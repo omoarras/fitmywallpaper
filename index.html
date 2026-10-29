@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fit My Wallpaper – Make Any Photo Fit Your Phone in HD &amp; 4K</title>
+<meta name="description" content="Convert any low quality photo into high 4K to match your device. No stretching, no blur – pick your phone or tablet and get a perfect wallpaper in one tap.">
+<link rel="canonical" href="https://fitmywallpaper.vercel.app/">
+<meta name="theme-color" content="#6a2bd9">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fit My Wallpaper – Any Photo, Perfect on Your Screen">
+<meta property="og:description" content="Convert any low quality photo into high 4K to match your device.">
+<meta property="og:url" content="https://fitmywallpaper.vercel.app/">
+<meta name="twitter:card" content="summary">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Fit My Wallpaper",
+  "url": "https://fitmywallpaper.vercel.app/",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any",
+  "description": "Convert any low quality photo into high 4K to match your device. Resize, change orientation and fit wallpapers for iPhone, Samsung, iPad and more without stretching or losing quality."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Why does my photo quality drop when I set it as my wallpaper?",
+     "acceptedAnswer":{"@type":"Answer","text":"Your phone zooms and crops any photo that doesn't match its screen shape, and stretches small photos to fill the screen. Both make it blurry. Fit My Wallpaper rebuilds the photo at your exact screen size, so nothing is zoomed or stretched."}},
+    {"@type":"Question","name":"How do I make a picture fit my phone screen without cropping or stretching?",
+     "acceptedAnswer":{"@type":"Answer","text":"Choose your photo, pick your phone from the list (or let us detect it), and tap Make My Wallpaper. You get an image at your screen's exact resolution."}},
+    {"@type":"Question","name":"How do I turn a portrait photo into a landscape (horizontal) wallpaper?",
+     "acceptedAnswer":{"@type":"Answer","text":"Pick a landscape device such as a laptop or TV, or choose Landscape for a tablet. The original framing is kept and only the missing edges are filled in to match."}},
+    {"@type":"Question","name":"Can I make a low quality photo into an HD or 4K wallpaper?",
+     "acceptedAnswer":{"@type":"Answer","text":"Yes. Every result is rendered at high resolution, up to 4K, then sized exactly for your device."}}
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --purple:#6a2bd9; --purple-dark:#4b1a9e; --purple-soft:#f3edff; --purple-line:#d9c9fb;
+    --ink:#22183a; --muted:#5e5378; --white:#ffffff; --danger:#b42318;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--white);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:19px;line-height:1.5}
+  header{background:var(--purple);color:var(--white);padding:28px 16px 34px;text-align:center}
+  header h1{margin:0;font-size:clamp(28px,6vw,40px);letter-spacing:-.5px}
+  header p{margin:8px auto 0;max-width:560px;font-size:clamp(17px,4vw,20px);opacity:.95}
+  main{max-width:620px;margin:-18px auto 0;padding:0 16px 48px}
+  .card{background:var(--white);border:2px solid var(--purple-line);border-radius:var(--radius);
+    padding:22px 18px;box-shadow:0 8px 28px rgba(74,26,158,.10)}
+  .step{margin-bottom:26px}
+  .step:last-child{margin-bottom:0}
+  .step-title{display:flex;align-items:center;gap:12px;font-weight:700;font-size:21px;margin-bottom:12px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--purple);color:#fff;
+    display:grid;place-items:center;font-size:18px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:62px;
+    border:none;border-radius:14px;font:inherit;font-weight:700;font-size:21px;cursor:pointer;
+    background:var(--purple);color:#fff;padding:12px 18px;text-decoration:none}
+  .btn:hover{background:var(--purple-dark)}
+  .btn:focus-visible,select:focus-visible,input:focus-visible{outline:4px solid #b79cff;outline-offset:2px}
+  .btn.light{background:var(--purple-soft);color:var(--purple-dark);border:2px solid var(--purple-line)}
+  .btn.light:hover{background:#e9defd}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .preview{display:none;margin-top:14px;border-radius:12px;overflow:hidden;border:2px solid var(--purple-line);background:var(--purple-soft)}
+  .preview img{display:block;width:100%;max-height:340px;object-fit:contain}
+  select,input[type=number]{width:100%;min-height:58px;font:inherit;font-size:19px;color:var(--ink);
+    border:2px solid var(--purple-line);border-radius:12px;padding:10px 14px;background:#fff}
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--purple) 50%),linear-gradient(135deg,var(--purple) 50%,transparent 50%);
+    background-position:calc(100% - 24px) 50%,calc(100% - 16px) 50%;background-size:8px 8px;background-repeat:no-repeat;padding-right:44px}
+  .row{display:flex;gap:12px;margin-top:12px}
+  .row > *{flex:1}
+  label.small{display:block;font-size:16px;color:var(--muted);margin-bottom:4px}
+  .toggle{display:flex;border:2px solid var(--purple-line);border-radius:12px;overflow:hidden;margin-top:12px}
+  .toggle button{flex:1;min-height:54px;font:inherit;font-size:18px;font-weight:600;border:none;background:#fff;color:var(--purple-dark);cursor:pointer}
+  .toggle button.on{background:var(--purple);color:#fff}
+  .hint{font-size:16px;color:var(--muted);margin:8px 2px 0}
+  #custom{display:none}
+  #status{display:none;text-align:center;padding:22px 10px}
+  .spinner{width:56px;height:56px;border-radius:50%;border:6px solid var(--purple-soft);border-top-color:var(--purple);
+    margin:0 auto 14px;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spinner{animation-duration:3s}}
+  .error{display:none;background:#fff1f0;border:2px solid #f5c2bd;color:var(--danger);border-radius:12px;padding:14px;margin-top:14px;font-weight:600}
+  #result{display:none;margin-top:6px}
+  #result img{display:block;width:100%;border-radius:12px;border:2px solid var(--purple-line)}
+  #result .btn{margin-top:12px}
+  .done{font-size:21px;font-weight:700;text-align:center;margin:0 0 12px;color:var(--purple-dark)}
+  section.info{margin-top:40px}
+  section.info h2{font-size:24px;color:var(--purple-dark);margin:0 0 6px}
+  details{border:2px solid var(--purple-line);border-radius:14px;padding:4px 16px;margin-top:12px;background:#fff}
+  details[open]{background:var(--purple-soft)}
+  summary{cursor:pointer;font-weight:700;padding:12px 0;font-size:19px}
+  details p{margin:0 0 14px}
+  footer{text-align:center;color:var(--muted);font-size:15px;padding:24px 16px 36px;border-top:2px solid var(--purple-soft)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Fit My Wallpaper</h1>
+  <p>Convert any low quality photo into high 4K to match your device. No stretching. No blur.</p>
+</header>
+
+<main>
+  <div class="card" id="app">
+
+    <div class="step">
+      <div class="step-title"><span class="num">1</span>Choose your photo</div>
+      <input type="file" id="file" accept="image/*" hidden>
+      <button class="btn" id="pick" type="button">🖼️ Choose a photo</button>
+      <div class="preview" id="preview"><img id="previewImg" alt="Your chosen photo"></div>
+    </div>
+
+    <div class="step">
+      <div class="step-title"><span class="num">2</span>Choose your screen</div>
+      <select id="device" aria-label="Your device"></select>
+      <div class="toggle" id="orient" role="group" aria-label="Orientation">
+        <button type="button" data-o="portrait" class="on">▯ Upright</button>
+        <button type="button" data-o="landscape">▭ Sideways</button>
+      </div>
+      <div id="custom">
+        <div class="row">
+          <div><label class="small" for="cw">Width (pixels)</label><input type="number" id="cw" inputmode="numeric" min="200" max="8000" placeholder="1080"></div>
+          <div><label class="small" for="ch">Height (pixels)</label><input type="number" id="ch" inputmode="numeric" min="200" max="8000" placeholder="2400"></div>
+        </div>
+      </div>
+      <p class="hint" id="sizeHint"></p>
+    </div>
+
+    <div class="step">
+      <div class="step-title"><span class="num">3</span>Make your wallpaper</div>
+      <button class="btn" id="go" type="button" disabled>✨ Make my wallpaper</button>
+      <div class="error" id="error" role="alert"></div>
+      <div id="status" aria-live="polite">
+        <div class="spinner"></div>
+        <strong>Working on your photo…</strong><br>
+        <span class="hint">This usually takes about 1 minute. Please keep this page open.</span>
+      </div>
+      <div id="result">
+        <p class="done">✅ Your wallpaper is ready!</p>
+        <img id="resultImg" alt="Your new wallpaper">
+        <button class="btn" id="save" type="button">⬇️ Save to my photos</button>
+        <button class="btn light" id="again" type="button">Make another one</button>
+        <p class="hint" id="saveHint">Tip: if saving doesn't start, press and hold the picture, then choose "Save".</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="info">
+    <h2>Why does my photo look blurry as a wallpaper?</h2>
+    <p>Phones zoom in and crop any photo that isn't the same shape as the screen, and they stretch small photos to fill it. Both make pictures blurry. Fit My Wallpaper rebuilds your photo at your screen's exact size, keeping the same framing, so it looks sharp, in HD or 4K.</p>
+
+    <details><summary>Why does my photo quality drop when I set it as my wallpaper?</summary>
+      <p>Your phone screen is tall and narrow. When a photo has a different shape, the phone zooms in to fill the screen, which throws away pixels and makes the picture soft. We fix the shape first, so no zooming is needed.</p></details>
+    <details><summary>How do I make a picture fit my phone without cropping or stretching?</summary>
+      <p>Choose your photo, pick your phone (we try to detect it for you), and tap "Make my wallpaper". The result matches your screen's exact pixel size.</p></details>
+    <details><summary>Can I turn a portrait photo into a landscape wallpaper?</summary>
+      <p>Yes. Pick a computer or TV, or choose "Sideways" for a tablet. Your photo keeps its framing; only the missing edges are filled in to match.</p></details>
+    <details><summary>Can a low quality photo become HD or 4K?</summary>
+      <p>Yes. Every wallpaper is rebuilt at high resolution, up to 4K, then sized exactly for your device.</p></details>
+    <details><summary>Do you keep my photos?</summary>
+      <p>No. Your photo is used only to make your wallpaper and is not stored on our site.</p></details>
+  </section>
+</main>
+
+<footer>Fit My Wallpaper · Use photos you own or have permission to use.</footer>
+
+<script>
+// Screen sizes in pixels, upright (portrait) orientation.
+const DEVICES = [
+  ["📱 My device (auto-detect)", "auto"],
+  ["— iPhone —"],
+  ["iPhone 17 Pro Max / 16 Pro Max", 1320, 2868],
+  ["iPhone 17 Pro / 17 / 16 Pro", 1206, 2622],
+  ["iPhone Air", 1260, 2736],
+  ["iPhone 16 / 15 / 15 Pro", 1179, 2556],
+  ["iPhone 16 Plus / 15 Plus / 15 Pro Max", 1290, 2796],
+  ["iPhone 14 / 13 / 12", 1170, 2532],
+  ["iPhone 11 / XR", 828, 1792],
+  ["iPhone SE / 8", 750, 1334],
+  ["— Samsung —"],
+  ["Galaxy S25 Ultra / S24 Ultra", 1440, 3120],
+  ["Galaxy S25 / S24 / S23", 1080, 2340],
+  ["Galaxy A56 / A55 / A35 / A15", 1080, 2340],
+  ["Galaxy A06 / A05 (budget)", 720, 1600],
+  ["Galaxy Z Fold (inner screen)", 1968, 2184],
+  ["— Other phones —"],
+  ["Google Pixel 10 Pro / 9 Pro", 1280, 2856],
+  ["Google Pixel 10 / 9", 1080, 2424],
+  ["Xiaomi / Redmi / Oppo / Realme (most)", 1080, 2400],
+  ["Tecno / Infinix / Honor (most)", 1080, 2460],
+  ["Budget Android (HD+)", 720, 1600],
+  ["— Tablets —"],
+  ["iPad Pro 13\"", 2064, 2752],
+  ["iPad Pro 11\"", 1668, 2420],
+  ["iPad Air 13\"", 2048, 2732],
+  ["iPad / iPad Air 11\"", 1640, 2360],
+  ["iPad mini", 1488, 2266],
+  ["Galaxy Tab S10 / S9", 1600, 2560],
+  ["Galaxy Tab A9+", 1200, 1920],
+  ["— Computers & TVs —"],
+  ["Laptop / monitor – Full HD (1920×1080)", 1920, 1080],
+  ["Monitor – 2K / QHD (2560×1440)", 2560, 1440],
+  ["Monitor / TV – 4K (3840×2160)", 3840, 2160],
+  ["MacBook Air 13\"", 2560, 1664],
+  ["MacBook Pro 14\"", 3024, 1964],
+  ["Ultrawide monitor", 3440, 1440],
+  ["— —"],
+  ["✏️ Type my own size", "custom"],
+];
+
+const $ = (id) => document.getElementById(id);
+const sel = $("device");
+DEVICES.forEach((d, i) => {
+  const o = document.createElement("option");
+  o.textContent = d[0];
+  o.value = i;
+  if (d.length === 1) o.disabled = true;
+  sel.appendChild(o);
+});
+
+let orient = "portrait";
+let photoDataUrl = null;
+let resultBlob = null;
+
+function autoSize() {
+  const dpr = window.devicePixelRatio || 1;
+  let w = Math.round(screen.width * dpr), h = Math.round(screen.height * dpr);
+  // Desktop browsers: keep native landscape. Mobiles: upright.
+  const mobile = matchMedia("(pointer:coarse)").matches;
+  if (mobile && w > h) [w, h] = [h, w];
+  return [w, h, mobile];
+}
+
+function currentSize() {
+  const d = DEVICES[sel.value];
+  if (d[1] === "custom") {
+    return [Number($("cw").value), Number($("ch").value)];
+  }
+  let w, h;
+  if (d[1] === "auto") {
+    const [aw, ah, mobile] = autoSize();
+    w = aw; h = ah;
+    if (!mobile) return [w, h];
+  } else { w = d[1]; h = d[2]; }
+  const isLandscapeNative = w > h;
+  if (isLandscapeNative) return [w, h];        // computers/TVs are always landscape
+  return orient === "landscape" ? [h, w] : [w, h];
+}
+
+function refreshUI() {
+  const d = DEVICES[sel.value];
+  const custom = d[1] === "custom";
+  $("custom").style.display = custom ? "block" : "none";
+  const fixedLandscape = Array.isArray(d) && typeof d[1] === "number" && d[1] > d[2];
+  $("orient").style.display = custom || fixedLandscape ? "none" : "flex";
+  const [w, h] = currentSize();
+  $("sizeHint").textContent = w >= 200 && h >= 200 ? `Your wallpaper will be ${w} × ${h} pixels.` : "Type a width and height (at least 200).";
+  $("go").disabled = !photoDataUrl || !(w >= 200 && h >= 200);
+}
+
+sel.addEventListener("change", refreshUI);
+$("cw").addEventListener("input", refreshUI);
+$("ch").addEventListener("input", refreshUI);
+$("orient").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  orient = b.dataset.o;
+  [...$("orient").children].forEach((x) => x.classList.toggle("on", x === b));
+  refreshUI();
+});
+
+// Opens the phone's photo picker (recent photos first on iPhone and Android).
+$("pick").addEventListener("click", () => $("file").click());
+$("file").addEventListener("change", async () => {
+  const f = $("file").files[0];
+  if (!f) return;
+  hideError();
+  try {
+    photoDataUrl = await shrink(f, 2048);
+    $("previewImg").src = photoDataUrl;
+    $("preview").style.display = "block";
+    $("pick").textContent = "🖼️ Choose a different photo";
+    $("pick").classList.add("light");
+  } catch {
+    showError("That file couldn't be opened. Please choose a photo (JPG, PNG or HEIC).");
+  }
+  refreshUI();
+});
+
+// Resize big photos before upload (keeps it fast and under the server's size limit).
+function shrink(file, maxEdge) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, maxEdge / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * s);
+      c.height = Math.round(img.naturalHeight * s);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", 0.92));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(); };
+    img.src = url;
+  });
+}
+
+$("go").addEventListener("click", async () => {
+  const [w, h] = currentSize();
+  hideError();
+  $("go").style.display = "none";
+  $("result").style.display = "none";
+  $("status").style.display = "block";
+  try {
+    const r = await fetch("/api/convert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: photoDataUrl, width: w, height: h }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok || !data.image) throw new Error(data.error || "Something went wrong. Please try again.");
+    resultBlob = await fitExactly(data.image, w, h);
+    $("resultImg").src = URL.createObjectURL(resultBlob);
+    $("result").style.display = "block";
+    $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (e) {
+    showError(e.message || "Something went wrong. Please try again.");
+    $("go").style.display = "flex";
+  } finally {
+    $("status").style.display = "none";
+  }
+});
+
+// Scale the AI result to the device's exact pixels (no stretching: center-fill).
+function fitExactly(src, w, h) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      const ctx = c.getContext("2d");
+      ctx.imageSmoothingQuality = "high";
+      const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+      const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
+      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      c.toBlob((b) => (b ? resolve(b) : reject()), "image/jpeg", 0.95);
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+$("save").addEventListener("click", async () => {
+  if (!resultBlob) return;
+  const [w, h] = currentSize();
+  const name = `wallpaper-${w}x${h}.jpg`;
+  const file = new File([resultBlob], name, { type: "image/jpeg" });
+  // On phones, the share sheet has "Save Image" – this puts it straight into Photos.
+  if (navigator.canShare && navigator.canShare({ files: [file] }) && matchMedia("(pointer:coarse)").matches) {
+    try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === "AbortError") return; }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(resultBlob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+$("again").addEventListener("click", () => {
+  $("result").style.display = "none";
+  $("go").style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+function showError(m) { $("error").textContent = m; $("error").style.display = "block"; }
+function hideError() { $("error").style.display = "none"; }
+
+refreshUI();
+</script>
+</body>
+</html>
