@@ -940,8 +940,8 @@ $("again").addEventListener("click", () => {
 const loadImg = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
 // Where the original sits inside a w×h canvas: whole photo, never cropped or zoomed.
 function containRect(iw, ih, w, h) {
-  const s = Math.min(w / iw, h / ih), dw = iw * s, dh = ih * s;
-  return { x: (w - dw) / 2, y: (h - dh) / 2, w: dw, h: dh };
+  const s = Math.min(w / iw, h / ih), dw = Math.round(iw * s), dh = Math.round(ih * s);
+  return { x: Math.round((w - dw) / 2), y: Math.round((h - dh) / 2), w: dw, h: dh };
 }
 // Canvas at the target shape: original in the middle, blurred colour hints around it,
 // plus a mask where transparent = "AI may paint here" and opaque = "locked original".
@@ -955,7 +955,10 @@ async function prepareCanvas(src, w, h) {
   x.drawImage(img, r.x, r.y, r.w, r.h);   // edges stay transparent: that's where the AI paints
   const m = document.createElement("canvas"); m.width = cw; m.height = ch;
   const mx = m.getContext("2d");
-  mx.fillStyle = "#000"; mx.fillRect(Math.round(r.x) + 1, Math.round(r.y) + 1, Math.round(r.w) - 2, Math.round(r.h) - 2);
+  // Let the AI also repaint a thin band just inside the photo edge, so its new pixels can blend into the original.
+  const band = Math.max(4, Math.round(Math.min(r.w, r.h) * 0.03));
+  const bx = r.x > 0 ? band : 0, by = r.y > 0 ? band : 0;
+  mx.fillStyle = "#000"; mx.fillRect(r.x + bx, r.y + by, r.w - 2 * bx, r.h - 2 * by);
   return { image: c.toDataURL("image/png"), mask: m.toDataURL("image/png") };
 }
 // Final wallpaper: AI result underneath, the untouched original pasted back on top
@@ -970,7 +973,7 @@ async function compositeLocked(resultSrc, origSrc, w, h) {
   const t = document.createElement("canvas"); t.width = Math.round(r.w); t.height = Math.round(r.h);
   const tx = t.getContext("2d"); tx.imageSmoothingQuality = "high";
   tx.drawImage(orig, 0, 0, t.width, t.height);
-  const f = Math.max(2, Math.round(Math.min(t.width, t.height) * 0.012));
+  const f = Math.max(12, Math.round(Math.min(t.width, t.height) * 0.05));
   tx.globalCompositeOperation = "destination-out";
   const fade = (x0, y0, x1, y1, rx, ry, rw, rh) => { const g = tx.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)"); tx.fillStyle = g; tx.fillRect(rx, ry, rw, rh); };
   if (r.x > 1) { fade(0, 0, f, 0, 0, 0, f, t.height); fade(t.width, 0, t.width - f, 0, t.width - f, 0, f, t.height); }
