@@ -4,7 +4,15 @@ import { Redis } from "@upstash/redis";
 
 export const FREE_WALLPAPERS = 2;
 export const COST = { standard: 1, ultra: 3 };
+// Lemon Squeezy checkout links (public). Can be overridden with LS_CHECKOUT_10/30/100 env vars.
+const LS = "https://fit-my-wallpaper.lemonsqueezy.com/checkout/buy/";
+const DEFAULT_LINKS = {
+  10: LS + "946c4624-dbe1-4c02-ac58-d9bbb3021c06",
+  30: LS + "b46fb86e-ec28-42bf-bd24-6967a7bbf68a",
+  100: LS + "bb07b64f-bf87-487d-94cc-541f0dc024a4",
+};
 export const PACKS = { 10: "LS_CHECKOUT_10", 30: "LS_CHECKOUT_30", 100: "LS_CHECKOUT_100" };
+export const checkoutLink = (n) => (PACKS[n] && (process.env[PACKS[n]] || DEFAULT_LINKS[n])) || null;
 
 export const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {

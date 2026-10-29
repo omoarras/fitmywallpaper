@@ -1,9 +1,9 @@
 // GET → who is signed in + wallpapers left. Also returns public config for the page.
-import { getSession, getCredits, json, clearCookie, PACKS } from "./_lib.js";
+import { getSession, getCredits, json, clearCookie, PACKS, checkoutLink } from "./_lib.js";
 
 const config = () => ({
   googleClientId: process.env.GOOGLE_CLIENT_ID || "",
-  packs: Object.keys(PACKS).filter((n) => process.env[PACKS[n]]).map(Number),
+  packs: Object.keys(PACKS).filter((n) => checkoutLink(n)).map(Number),
 });
 
 export async function GET(request) {

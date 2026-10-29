@@ -1,11 +1,11 @@
 // GET ?pack=10|30|100 → Lemon Squeezy checkout link tied to the signed-in person.
-import { getSession, json, PACKS } from "./_lib.js";
+import { getSession, json, checkoutLink } from "./_lib.js";
 
 export async function GET(request) {
   const s = getSession(request);
   if (!s) return json({ error: "Please sign in first." }, 401);
   const pack = new URL(request.url).searchParams.get("pack");
-  const base = PACKS[pack] && process.env[PACKS[pack]];
+  const base = checkoutLink(pack);
   if (!base) return json({ error: "That pack isn't available yet." }, 400);
 
   const u = new URL(base);

@@ -15,11 +15,12 @@ export async function POST(request) {
 
   const body = JSON.parse(raw);
   const event = body?.meta?.event_name;
-  if (event !== "order_created") return json({ ok: true, ignored: event });
+  if (event !== "order_created" && event !== "order_refunded") return json({ ok: true, ignored: event });
 
   const a = body.data?.attributes || {};
   const userId = body.meta?.custom_data?.user_id;
-  if (a.status !== "paid" || !userId) return json({ ok: true, ignored: "not paid or no user" });
+  if (!userId) return json({ ok: true, ignored: "no user" });
+  if (event === "order_created" && a.status !== "paid") return json({ ok: true, ignored: "not paid" });
 
   const item = a.first_order_item || {};
   const qty = Number(item.quantity || 1);
@@ -29,11 +30,14 @@ export async function POST(request) {
     return json({ error: "unknown pack" }, 400);
   }
 
-  // Only count each order once, even if Lemon Squeezy retries.
-  const first = await db().set(`order:${body.data.id}`, userId, { nx: true });
+  // Only count each order (and each refund) once, even if Lemon Squeezy retries.
+  const refund = event === "order_refunded";
+  const first = await db().set(`${refund ? "refund" : "order"}:${body.data.id}`, userId, { nx: true });
   if (!first) return json({ ok: true, duplicate: true });
 
-  const balance = await giveCredits(userId, amount * qty);
-  console.log(`Order ${body.data.id}: +${amount * qty} wallpapers for ${userId} (now ${balance})`);
+  const change = (refund ? -1 : 1) * amount * qty;
+  let balance = await giveCredits(userId, change);
+  if (balance < 0) balance = await giveCredits(userId, -balance); // never below zero
+  console.log(`Order ${body.data.id} ${event}: ${change} wallpapers for ${userId} (now ${balance})`);
   return json({ ok: true });
 }
