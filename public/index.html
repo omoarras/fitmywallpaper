@@ -102,6 +102,23 @@
   details[open]{background:var(--purple-soft)}
   summary{cursor:pointer;font-weight:700;padding:12px 0;font-size:19px}
   details p{margin:0 0 14px}
+  .account{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    background:var(--purple-soft);border:2px solid var(--purple-line);border-radius:14px;padding:10px 14px;margin-bottom:20px;font-size:17px}
+  .account b{color:var(--purple-dark)}
+  .linkbtn{background:none;border:none;font:inherit;font-size:16px;color:var(--purple-dark);text-decoration:underline;cursor:pointer;padding:6px}
+  .panel{display:none;margin-top:14px;border:2px solid var(--purple-line);border-radius:16px;padding:18px;background:#fff;text-align:center}
+  .panel h3{margin:0 0 6px;font-size:22px;color:var(--purple-dark)}
+  .panel p{margin:0 0 14px}
+  #gbtn{display:flex;justify-content:center;min-height:48px}
+  .packs{display:grid;gap:12px}
+  .pack{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:72px;text-align:left;
+    border:2px solid var(--purple-line);border-radius:14px;background:#fff;padding:12px 16px;font:inherit;color:var(--ink);cursor:pointer}
+  .pack:hover{border-color:var(--purple);background:var(--purple-soft)}
+  .pack.best{border-color:var(--purple);box-shadow:0 0 0 3px #e6dbff}
+  .pack .n{font-size:20px;font-weight:700}
+  .pack .each{display:block;font-size:15px;color:var(--muted)}
+  .pack .price{font-size:22px;font-weight:800;color:var(--purple-dark);white-space:nowrap}
+  .tag{display:inline-block;background:var(--purple);color:#fff;font-size:13px;font-weight:700;border-radius:999px;padding:2px 10px;margin-left:6px;vertical-align:middle}
   footer{text-align:center;color:var(--muted);font-size:15px;padding:24px 16px 36px;border-top:2px solid var(--purple-soft)}
 </style>
 </head>
@@ -114,6 +131,13 @@
 
 <main>
   <div class="card" id="app">
+    <div class="account" id="account">
+      <span id="accountText">🎁 Your first 2 wallpapers are free</span>
+      <span>
+        <button class="linkbtn" id="buyLink" type="button" hidden>Get more</button>
+        <button class="linkbtn" id="logout" type="button" hidden>Sign out</button>
+      </span>
+    </div>
 
     <div class="step">
       <div class="step-title"><span class="num">1</span>Choose your photo</div>
@@ -140,8 +164,25 @@
 
     <div class="step">
       <div class="step-title"><span class="num">3</span>Make your wallpaper</div>
+      <div class="toggle" id="quality" role="group" aria-label="Quality" style="margin:0 0 12px">
+        <button type="button" data-q="standard" class="on">HD<br><small>uses 1</small></button>
+        <button type="button" data-q="ultra">Ultra 4K<br><small>uses 3</small></button>
+      </div>
       <button class="btn" id="go" type="button" disabled>✨ Make my wallpaper</button>
       <div class="error" id="error" role="alert"></div>
+
+      <div class="panel" id="signin">
+        <h3>Sign in to continue</h3>
+        <p>Sign in with Google to get <b>2 free wallpapers</b>. No password needed.</p>
+        <div id="gbtn"></div>
+      </div>
+
+      <div class="panel" id="buy">
+        <h3 id="buyTitle">Get more wallpapers</h3>
+        <p>Pay once. They never expire.</p>
+        <div class="packs" id="packs"></div>
+        <p class="hint">Secure payment by card. Your wallpapers appear here right after paying.</p>
+      </div>
       <div id="status" aria-live="polite">
         <div class="spinner"></div>
         <strong>Working on your photo…</strong><br>
@@ -169,6 +210,8 @@
       <p>Yes. Pick a computer or TV, or choose "Sideways" for a tablet. Your photo keeps its framing; only the missing edges are filled in to match.</p></details>
     <details><summary>Can a low quality photo become HD or 4K?</summary>
       <p>Yes. Every wallpaper is rebuilt at high resolution, up to 4K, then sized exactly for your device.</p></details>
+    <details><summary>Is it free?</summary>
+      <p>Your first 2 wallpapers are free. After that you can buy a pack: 10 for $2.99, 30 for $6.99 or 100 for $19.99. You pay once and they never expire.</p></details>
     <details><summary>Do you keep my photos?</summary>
       <p>No. Your photo is used only to make your wallpaper and is not stored on our site.</p></details>
   </section>
@@ -318,9 +361,136 @@ function shrink(file, maxEdge) {
   });
 }
 
-$("go").addEventListener("click", async () => {
+// ---------- Account, free wallpapers and packs ----------
+const PRICES = { 10: "$2.99", 30: "$6.99", 100: "$19.99" };
+const COST = { standard: 1, ultra: 3 };
+let me = null, cfg = { googleClientId: "", packs: [] }, quality = "standard", pendingMake = false;
+
+const store = {
+  get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
+  del(k) { try { sessionStorage.removeItem(k); } catch {} },
+};
+
+async function loadMe() {
+  try {
+    const r = await fetch("/api/me", { cache: "no-store" });
+    const d = await r.json();
+    me = d.user; cfg = d;
+  } catch { me = null; }
+  renderAccount();
+  return me;
+}
+
+function renderAccount() {
+  if (me) {
+    const n = me.credits;
+    $("accountText").innerHTML = `Hi${me.name ? " " + esc(me.name) : ""}! You have <b>${n} wallpaper${n === 1 ? "" : "s"}</b> left`;
+    $("logout").hidden = false; $("buyLink").hidden = false;
+    $("signin").style.display = "none";
+  } else {
+    $("accountText").textContent = "🎁 Your first 2 wallpapers are free";
+    $("logout").hidden = true; $("buyLink").hidden = true;
+  }
+  renderPacks();
+}
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function renderPacks() {
+  const box = $("packs");
+  box.innerHTML = "";
+  const avail = cfg.packs || [];
+  if (!avail.length) { box.innerHTML = '<p class="hint">Packs are coming soon.</p>'; return; }
+  avail.forEach((n) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "pack" + (n === 30 ? " best" : "");
+    const each = (parseFloat(PRICES[n].slice(1)) / n).toFixed(2);
+    b.innerHTML = `<span><span class="n">${n} wallpapers${n === 30 ? '<span class="tag">Most popular</span>' : ""}</span>
+      <span class="each">$${each} each</span></span><span class="price">${PRICES[n]}</span>`;
+    b.addEventListener("click", () => buy(n));
+    box.appendChild(b);
+  });
+}
+
+async function buy(n) {
+  hideError();
+  try {
+    const r = await fetch("/api/checkout?pack=" + n);
+    const d = await r.json();
+    if (!r.ok || !d.url) throw new Error(d.error || "Payment isn't available right now.");
+    if (photoDataUrl) store.set("fmw_photo", photoDataUrl);
+    store.set("fmw_credits_before", String(me ? me.credits : 0));
+    location.href = d.url;
+  } catch (e) { showError(e.message); }
+}
+
+function showBuy(title) {
+  $("buyTitle").textContent = title || "Get more wallpapers";
+  $("buy").style.display = "block";
+  $("buy").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+$("buyLink").addEventListener("click", () => showBuy());
+
+$("logout").addEventListener("click", async () => {
+  await fetch("/api/me", { method: "POST" }).catch(() => {});
+  try { google.accounts.id.disableAutoSelect(); } catch {}
+  me = null; renderAccount();
+});
+
+// Google sign-in
+let gReady = null;
+function loadGoogle() {
+  if (gReady) return gReady;
+  gReady = new Promise((resolve, reject) => {
+    if (!cfg.googleClientId) return reject(new Error("Sign-in isn't set up yet."));
+    const sc = document.createElement("script");
+    sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
+    sc.onload = () => {
+      google.accounts.id.initialize({ client_id: cfg.googleClientId, callback: onGoogle, ux_mode: "popup" });
+      resolve();
+    };
+    sc.onerror = () => reject(new Error("Couldn't load Google sign-in. Please try again."));
+    document.head.appendChild(sc);
+  });
+  return gReady;
+}
+async function showSignIn() {
+  $("signin").style.display = "block";
+  $("signin").scrollIntoView({ behavior: "smooth", block: "center" });
+  try {
+    await loadGoogle();
+    $("gbtn").innerHTML = "";
+    google.accounts.id.renderButton($("gbtn"), { theme: "filled_blue", size: "large", shape: "pill", text: "continue_with", width: 300 });
+  } catch (e) { showError(e.message); }
+}
+async function onGoogle(resp) {
+  hideError();
+  try {
+    const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential: resp.credential }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Sign-in failed.");
+    me = { name: d.name, email: d.email, credits: d.credits };
+    renderAccount();
+    if (pendingMake) { pendingMake = false; make(); }
+  } catch (e) { showError(e.message); }
+}
+
+$("quality").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  quality = b.dataset.q;
+  [...$("quality").children].forEach((x) => x.classList.toggle("on", x === b));
+});
+
+$("go").addEventListener("click", make);
+
+async function make() {
   const [w, h] = currentSize();
   hideError();
+  $("buy").style.display = "none";
+  if (!me) { pendingMake = true; return showSignIn(); }
+  if (me.credits < COST[quality]) {
+    return showBuy(me.credits ? `Ultra 4K uses 3 wallpapers. You have ${me.credits}.` : "You've used your free wallpapers");
+  }
   $("go").style.display = "none";
   $("result").style.display = "none";
   $("status").style.display = "block";
@@ -328,21 +498,46 @@ $("go").addEventListener("click", async () => {
     const r = await fetch("/api/convert", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: photoDataUrl, width: w, height: h }),
+      body: JSON.stringify({ image: photoDataUrl, width: w, height: h, quality }),
     });
     const data = await r.json().catch(() => ({}));
+    if (data.needLogin) { me = null; renderAccount(); pendingMake = true; showSignIn(); throw null; }
+    if (data.needCredits) { await loadMe(); showBuy("You've used your free wallpapers"); throw null; }
     if (!r.ok || !data.image) throw new Error(data.error || "Something went wrong. Please try again.");
+    if (me && typeof data.credits === "number") { me.credits = data.credits; renderAccount(); }
     resultBlob = await fitExactly(data.image, w, h);
     $("resultImg").src = URL.createObjectURL(resultBlob);
     $("result").style.display = "block";
     $("result").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (e) {
-    showError(e.message || "Something went wrong. Please try again.");
+    if (e) showError(e.message || "Something went wrong. Please try again.");
     $("go").style.display = "flex";
   } finally {
     $("status").style.display = "none";
   }
-});
+}
+
+// Coming back from payment: restore the photo and wait for the wallpapers to arrive.
+async function afterPayment() {
+  const saved = store.get("fmw_photo");
+  if (saved) {
+    photoDataUrl = saved; store.del("fmw_photo");
+    $("previewImg").src = saved; $("preview").style.display = "block";
+    $("pick").textContent = "🖼️ Choose a different photo"; $("pick").classList.add("light");
+    refreshUI();
+  }
+  if (!new URLSearchParams(location.search).has("paid")) return;
+  history.replaceState(null, "", location.pathname);
+  const before = Number(store.get("fmw_credits_before") || 0);
+  store.del("fmw_credits_before");
+  $("accountText").textContent = "⏳ Adding your wallpapers…";
+  for (let i = 0; i < 20; i++) {
+    await new Promise((r) => setTimeout(r, 3000));
+    const u = await loadMe();
+    if (u && u.credits > before) { $("accountText").innerHTML = `✅ Thank you! You now have <b>${u.credits} wallpapers</b>`; return; }
+  }
+  renderAccount();
+}
 
 // Scale the AI result to the device's exact pixels (no stretching: center-fill).
 function fitExactly(src, w, h) {
@@ -388,6 +583,7 @@ function showError(m) { $("error").textContent = m; $("error").style.display = "
 function hideError() { $("error").style.display = "none"; }
 
 refreshUI();
+loadMe().then(afterPayment);
 </script>
 </body>
 </html>

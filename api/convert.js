@@ -1,27 +1,13 @@
-// Vercel serverless function: sends the photo + composition-locked prompt to OpenAI.
-// Secret key lives in Vercel env var OPENAI_API_KEY (never in this file).
-
+// POST {image, width, height, quality:"standard"|"ultra"} → wallpaper. Uses the person's wallpaper balance.
+import { getSession, takeCredits, giveCredits, json, COST } from "./_lib.js";
 
 const MODEL = process.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
-const QUALITY = process.env.OPENAI_IMAGE_QUALITY || "high";
-const LIMIT_PER_HOUR = Number(process.env.LIMIT_PER_HOUR || 6);
+const QUALITY = { standard: "medium", ultra: "high" };
 
-// Basic per-IP limit (resets when the server restarts; stops casual abuse).
-const hits = new Map();
-function allowed(ip) {
-  const now = Date.now();
-  const list = (hits.get(ip) || []).filter((t) => now - t < 3600_000);
-  if (list.length >= LIMIT_PER_HOUR) return false;
-  list.push(now);
-  hits.set(ip, list);
-  return true;
-}
-
-// gpt-image-2 rules: long edge <= 3840, sides multiple of 16, ratio <= 3:1.
-function generationSize(w, h) {
+// gpt-image-2 rules: long edge <= 3840, sides multiple of 16, ratio <= 3:1, <= 8,294,400 pixels.
+export function generationSize(w, h) {
   const long = Math.max(w, h), short = Math.min(w, h);
   if (long / short > 3) throw new Error("That shape is too extreme (max 3:1).");
-  // Render as large as the model allows (up to 4K-class) so the result is sharp on any screen.
   const scale = Math.min(3840 / long, Math.sqrt(8_294_400 / (w * h)));
   const r16 = (v) => Math.max(16, Math.floor((v * scale) / 16) * 16);
   return [r16(w), r16(h)];
@@ -57,35 +43,46 @@ No additional scene revealed.
 Preserve the original image exactly; only adapt it to the target aspect ratio.`;
 }
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Use POST." });
-
+export async function POST(request) {
   const key = process.env.OPENAI_API_KEY || process.env.OPEN_API_KEY;
-  if (!key) return res.status(500).json({ error: "Server is missing its API key." });
+  if (!key) return json({ error: "Server is missing its API key." }, 500);
 
-  const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
-  if (!allowed(ip)) return res.status(429).json({ error: "Limit reached. Please try again in an hour." });
+  const s = getSession(request);
+  if (!s) return json({ error: "Please sign in to make a wallpaper.", needLogin: true }, 401);
+
+  let body;
+  try { body = await request.json(); } catch { return json({ error: "Please choose a photo." }, 400); }
+  const { image, width, height } = body || {};
+  const tier = body?.quality === "ultra" ? "ultra" : "standard";
+  const w = Math.round(Number(width)), h = Math.round(Number(height));
+  if (!image || !/^data:image\/(jpeg|png|webp);base64,/.test(image))
+    return json({ error: "Please choose a photo." }, 400);
+  if (!(w >= 200 && h >= 200 && w <= 8000 && h <= 8000))
+    return json({ error: "Size must be between 200 and 8000 pixels." }, 400);
+
+  let gw, gh;
+  try { [gw, gh] = generationSize(w, h); } catch (e) { return json({ error: e.message }, 400); }
+
+  // Charge first, refund if anything fails.
+  const cost = COST[tier];
+  let left;
+  try { left = await takeCredits(s.sub, cost); } catch (e) { console.error(e); return json({ error: "Please try again in a moment." }, 503); }
+  if (left === null) return json({ error: "You've used all your wallpapers.", needCredits: true, cost }, 402);
 
   try {
-    const { image, width, height } = req.body || {};
-    const w = Math.round(Number(width)), h = Math.round(Number(height));
-    if (!image || !/^data:image\/(jpeg|png|webp);base64,/.test(image))
-      return res.status(400).json({ error: "Please choose a photo." });
-    if (!(w >= 200 && h >= 200 && w <= 8000 && h <= 8000))
-      return res.status(400).json({ error: "Size must be between 200 and 8000 pixels." });
-
-    const [gw, gh] = generationSize(w, h);
     const mime = image.slice(5, image.indexOf(";"));
     const buf = Buffer.from(image.split(",")[1], "base64");
+    if (buf.length > 3_000_000) throw Object.assign(new Error("That photo is too large."), { user: true });
 
     const fd = new FormData();
     fd.append("model", MODEL);
     fd.append("prompt", buildPrompt(w, h));
     fd.append("size", `${gw}x${gh}`);
-    fd.append("quality", QUALITY);
+    fd.append("quality", QUALITY[tier]);
     fd.append("n", "1");
-    fd.append("output_format", "webp"); // keeps the reply under Vercel's 4.5 MB limit
-    fd.append("output_compression", "92");
+    fd.append("output_format", "webp");
+    fd.append("output_compression", "88"); // keeps the reply under Vercel's 4.5 MB limit
+    fd.append("user", s.sub.slice(0, 64));
     fd.append("image", new Blob([buf], { type: mime }), "photo." + mime.split("/")[1]);
 
     const r = await fetch("https://api.openai.com/v1/images/edits", {
@@ -93,19 +90,21 @@ export default async function handler(req, res) {
       headers: { Authorization: `Bearer ${key}` },
       body: fd,
     });
-    const data = await r.json();
+    const data = await r.json().catch(() => ({}));
     if (!r.ok) {
-      console.error("OpenAI error", data);
-      const msg = data?.error?.code === "moderation_blocked"
+      console.error("OpenAI error", r.status, data?.error);
+      const code = data?.error?.code;
+      const msg = code === "moderation_blocked"
         ? "This photo can't be processed. Please try another."
-        : "The image service had a problem: " + (data?.error?.message || r.status);
-      return res.status(502).json({ error: msg });
+        : "Our image service is busy. Please try again in a minute.";
+      throw Object.assign(new Error(msg), { user: true });
     }
     const b64 = data?.data?.[0]?.b64_json;
-    if (!b64) return res.status(502).json({ error: "No image came back. Please try again." });
-    return res.status(200).json({ image: `data:image/webp;base64,${b64}` });
+    if (!b64) throw Object.assign(new Error("No image came back. Please try again."), { user: true });
+    return json({ image: `data:image/webp;base64,${b64}`, credits: left });
   } catch (e) {
+    await giveCredits(s.sub, cost).catch((err) => console.error("refund failed", err));
     console.error(e);
-    return res.status(500).json({ error: e.message || "Something went wrong." });
+    return json({ error: e.user ? e.message : "Something went wrong. Your wallpaper wasn't charged." }, 502);
   }
 }

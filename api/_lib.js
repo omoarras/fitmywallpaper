@@ -1,0 +1,80 @@
+// Shared helpers (files starting with "_" are not public endpoints on Vercel).
+import crypto from "node:crypto";
+import { Redis } from "@upstash/redis";
+
+export const FREE_WALLPAPERS = 2;
+export const COST = { standard: 1, ultra: 3 };
+export const PACKS = { 10: "LS_CHECKOUT_10", 30: "LS_CHECKOUT_30", 100: "LS_CHECKOUT_100" };
+
+export const json = (data, status = 200, headers = {}) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...headers },
+  });
+
+// ---------- Database (Upstash Redis, added from Vercel Storage) ----------
+let _redis = globalThis.__TEST_REDIS__ || null;
+export function db() {
+  if (_redis) return _redis;
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  if (!url || !token) throw new Error("Database is not connected yet.");
+  _redis = new Redis({ url, token });
+  return _redis;
+}
+
+export const userKey = (sub) => `user:${sub}`;
+
+export async function getCredits(sub) {
+  const v = await db().hget(userKey(sub), "credits");
+  return Number(v || 0);
+}
+
+// Atomically take credits; returns new balance, or null if not enough.
+export async function takeCredits(sub, n) {
+  const left = await db().hincrby(userKey(sub), "credits", -n);
+  if (left < 0) {
+    await db().hincrby(userKey(sub), "credits", n);
+    return null;
+  }
+  return left;
+}
+
+export const giveCredits = (sub, n) => db().hincrby(userKey(sub), "credits", n);
+
+// ---------- Sessions (signed cookie, 30 days) ----------
+const COOKIE = "fmw_session";
+const MAX_AGE = 60 * 60 * 24 * 30;
+
+function secret() {
+  const s = process.env.SESSION_SECRET || process.env.OPENAI_API_KEY || process.env.OPEN_API_KEY;
+  if (!s) throw new Error("Server is missing its secret.");
+  return crypto.createHash("sha256").update("fmw-session:" + s).digest();
+}
+const b64u = (buf) => Buffer.from(buf).toString("base64url");
+const sign = (data) => crypto.createHmac("sha256", secret()).update(data).digest("base64url");
+
+export function sessionCookie(user) {
+  const payload = b64u(JSON.stringify({ ...user, exp: Math.floor(Date.now() / 1000) + MAX_AGE }));
+  const value = `${payload}.${sign(payload)}`;
+  return `${COOKIE}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${MAX_AGE}`;
+}
+export const clearCookie = () => `${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+
+export function getSession(request) {
+  const raw = request.headers.get("cookie") || "";
+  const m = raw.match(new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`));
+  if (!m) return null;
+  const [payload, sig] = m[1].split(".");
+  if (!payload || !sig) return null;
+  const good = Buffer.from(sign(payload));
+  const given = Buffer.from(sig);
+  if (good.length !== given.length || !crypto.timingSafeEqual(good, given)) return null;
+  try {
+    const s = JSON.parse(Buffer.from(payload, "base64url").toString());
+    if (!s.sub || s.exp < Date.now() / 1000) return null;
+    return s;
+  } catch {
+    return null;
+  }
+}
