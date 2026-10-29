@@ -20,29 +20,52 @@ function ratioText(w, h) {
   if (a <= 32 && b <= 32) return `${a}:${b}`;
   return w >= h ? `${(w / h * 9).toFixed(1).replace(/\.0$/, "")}:9` : `9:${(h / w * 9).toFixed(1).replace(/\.0$/, "")}`;
 }
-// "Universal Composition-Locked Wallpaper Prompt (v1)" + Composition Lock, size filled in per screen.
-function buildPrompt(w, h) {
-  const orient = w > h ? "landscape" : w < h ? "portrait" : "square";
+// Controlled outpainting prompt; target fields filled from the user's selection.
+function buildPrompt(w, h, device) {
+  const orient = w > h ? "Landscape" : w < h ? "Portrait" : "Square";
   const r = ratioText(w, h);
-  return `Convert this image into a ${w}×${h} (${r}) ${orient} wallpaper while preserving the exact visual composition of the original image. Composition is the highest priority. The apparent crop, framing, camera position, focal length, perspective, subject placement, subject size, and visual balance must remain identical. The final image should look like the original photograph simply exists on a wider canvas—not like the camera moved, zoomed, or revealed more of the scene.
-Do NOT zoom out. Do NOT widen the field of view. Do NOT reveal additional portions of objects or the environment. Do NOT reposition or resize any existing element. The visible area of every object should remain visually identical to the original.
-Adapt the image to ${w}×${h} by reconstructing only what is absolutely necessary to preserve the original composition at the new aspect ratio. Any generated content must seamlessly continue existing textures, lighting, reflections, shadows, colors, grain, and geometry without attracting attention or altering the scene.
-Treat the original composition as locked. If preserving the composition conflicts with showing more of the environment, always preserve the composition.
-Output a sharp native ${w}×${h} image with identical color grading, contrast, noise, sharpness, and lighting. The viewer should perceive the exact same photograph, only reformatted to ${r}, with no visible AI edits or composition changes.
-
-Composition Lock: 100%
-- Camera locked.
-- Lens locked.
-- Perspective locked.
-- Crop perception locked.
-- Subject scale locked.
-- Subject positions locked.
-- Visual balance locked.
-- No zoom.
-- No pan.
-- No camera movement.
-- No additional scene revealed.
-- Preserve the original image exactly; only adapt it to the target aspect ratio.`;
+  const name = String(device || "").replace(/[^\w\s.\-+/()"']/g, "").slice(0, 60) || "Selected screen";
+  return `TASK: Expand the supplied photograph to fit the user's selected wallpaper aspect ratio using controlled AI outpainting.
+TARGET DEVICE: ${name}
+TARGET ORIENTATION: ${orient}
+TARGET RESOLUTION: ${w} × ${h} pixels
+TARGET ASPECT RATIO: ${r}
+PRIMARY OBJECTIVE
+Preserve the original photograph exactly and generate only the additional image content required to fit the target canvas.
+This is an OUTPAINTING task, not an image regeneration, image recreation, image enhancement, or subject reconstruction task.
+The original photograph is the immutable source of truth.
+1. ORIGINAL IMAGE PROTECTION
+Treat the entire original image as a protected, composition-locked region.
+Preserve its existing pixels, subject proportions, framing, camera perspective, lighting, colors, textures, grain, sharpness, and every visible object.
+Do not redraw, regenerate, reinterpret, enhance, or reconstruct any part of the original image.
+Do not change the subject's face, body, proportions, expression, clothing, position, or size.
+Do not alter the existing background, objects, shadows, reflections, or other visible details.
+The original image must remain pixel-identical wherever it overlaps the final canvas.
+2. CONTROLLED CANVAS EXPANSION
+Calculate the exact difference between the source image's aspect ratio and the selected target aspect ratio.
+Generate new pixels ONLY outside the protected original-image boundaries.
+Determine whether the canvas needs expansion on the left, right, top, or bottom based on the selected target dimensions and the application's composition-preservation rules.
+Continue the existing environment naturally.
+Match the source image's perspective, geometry, lighting direction, exposure, color grading, texture, grain, shadows, and depth of field.
+If the source shows a street, continue the road markings, pavement, buildings, shadows, and other existing environmental details.
+Do not introduce new subjects, objects, people, animals, vehicles, or structures unless they are unavoidably implied by the existing scene.
+Do not extend the subject's body or invent body parts simply to fill empty space.
+Prefer conservative, unobtrusive background continuation whenever a reliable reconstruction is uncertain.
+3. STRICT GEOMETRY CONSTRAINTS
+Do not stretch, distort, rotate, or independently scale the image's width and height.
+Do not zoom in or zoom out to compensate for the aspect-ratio difference.
+Do not move the subject.
+Do not change the original camera perspective or reconstruct the photograph from a different viewpoint.
+Do not add black bars, solid-color borders, blurred duplicate backgrounds, mirrored edges, or artificial padding.
+Do not fill missing areas with large smooth gradients or repetitive textures.
+Do not allow generated pixels to overwrite existing image content.
+4. FINAL IMAGE REQUIREMENTS
+Produce a seamless, photorealistic outpainting result suitable for a premium smartphone wallpaper.
+Preserve the original image's visual appearance and composition.
+The transition between the original photograph and the generated areas must be natural and unobtrusive.
+The final canvas must match the user's selected aspect ratio.
+The final export must have the exact pixel dimensions required by the selected device.
+IMPORTANT: The AI model must generate only the missing regions (the transparent area of the supplied canvas). The application preserves and composites the original pixels independently of the model's output.`;
 }
 
 export async function POST(request) {
@@ -82,11 +105,11 @@ export async function POST(request) {
   try {
     const mime = image.slice(5, image.indexOf(";"));
     const buf = Buffer.from(image.split(",")[1], "base64");
-    if (buf.length > 3_000_000) throw Object.assign(new Error("That photo is too large."), { user: true });
+    if (buf.length > 3_200_000) throw Object.assign(new Error("That photo is too large."), { user: true });
 
     const fd = new FormData();
     fd.append("model", MODEL);
-    fd.append("prompt", buildPrompt(w, h));
+    fd.append("prompt", buildPrompt(w, h, body?.device));
     fd.append("size", `${gw}x${gh}`);
     fd.append("quality", QUALITY[tier]);
     fd.append("n", "1");

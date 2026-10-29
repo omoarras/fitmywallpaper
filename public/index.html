@@ -876,11 +876,11 @@ async function make() {
   startWorking();
   try {
     let data;
-    const prep = DEMO ? await prepareCanvas(photoDataUrl, w, h) : null;
+    const prep = await prepareCanvas(photoDataUrl, w, h);
     if (DEMO) { await new Promise((r) => setTimeout(r, 2500)); data = { image: prep.image, credits: 1 }; }
     else {
-      // Same setup the prompt was tested with: the plain original photo, no mask.
-      const r = await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: photoDataUrl, width: w, height: h, quality }) });
+      const device = $("chosenName").textContent;
+      const r = await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: prep.image, mask: prep.mask, device, width: w, height: h, quality }) });
       data = await r.json().catch(() => ({}));
       if (data.needLogin) { stopWorking(); me = null; renderAccount(); pendingMake = true; return showSignIn(); }
       if (data.needUpgrade) { stopWorking(); return goPlans(); }
@@ -888,7 +888,7 @@ async function make() {
       if (!r.ok || !data.image) throw new Error(data.error || "Something went wrong. Your wallpaper wasn't charged. Try again.");
     }
     if (me && typeof data.credits === "number") { me.credits = data.credits; renderAccount(); }
-    resultBlob = DEMO ? await compositeLocked(data.image, photoDataUrl, w, h) : await fitExactly(data.image, w, h);
+    resultBlob = await compositeLocked(data.image, photoDataUrl, w, h);
     marked = data.mark !== false;
     if (marked) resultBlob = await addMark(resultBlob, w, h);
     stopWorking();
@@ -947,20 +947,16 @@ function containRect(iw, ih, w, h) {
 // plus a mask where transparent = "AI may paint here" and opaque = "locked original".
 async function prepareCanvas(src, w, h) {
   const img = await loadImg(src);
-  const long = 1536, k = long / Math.max(w, h);
+  const long = 1280, k = long / Math.max(w, h);
   const cw = Math.round(w * k), ch = Math.round(h * k);
   const r = containRect(img.naturalWidth, img.naturalHeight, cw, ch);
   const c = document.createElement("canvas"); c.width = cw; c.height = ch;
   const x = c.getContext("2d");
-  const cov = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
-  x.filter = "blur(24px)";
-  x.drawImage(img, (cw - img.naturalWidth * cov) / 2, (ch - img.naturalHeight * cov) / 2, img.naturalWidth * cov, img.naturalHeight * cov);
-  x.filter = "none";
-  x.drawImage(img, r.x, r.y, r.w, r.h);
+  x.drawImage(img, r.x, r.y, r.w, r.h);   // edges stay transparent: that's where the AI paints
   const m = document.createElement("canvas"); m.width = cw; m.height = ch;
   const mx = m.getContext("2d");
   mx.fillStyle = "#000"; mx.fillRect(Math.round(r.x) + 1, Math.round(r.y) + 1, Math.round(r.w) - 2, Math.round(r.h) - 2);
-  return { image: c.toDataURL("image/jpeg", 0.92), mask: m.toDataURL("image/png") };
+  return { image: c.toDataURL("image/png"), mask: m.toDataURL("image/png") };
 }
 // Final wallpaper: AI result underneath, the untouched original pasted back on top
 // with a soft few-pixel edge so there's no visible seam.
