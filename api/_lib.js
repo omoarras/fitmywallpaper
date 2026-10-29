@@ -3,6 +3,9 @@ import crypto from "node:crypto";
 import { Redis } from "@upstash/redis";
 
 export const FREE_WALLPAPERS = 2;
+// Google sign-in Client ID (public). Can be overridden with GOOGLE_CLIENT_ID env var.
+export const googleClientId = () =>
+  process.env.GOOGLE_CLIENT_ID || "520588086441-dm9obqt9m24hopbrlouaiqfivcouedds.apps.googleusercontent.com";
 export const COST = { standard: 1, ultra: 3 };
 // Lemon Squeezy checkout links (public). Can be overridden with LS_CHECKOUT_10/30/100 env vars.
 const LS = "https://fit-my-wallpaper.lemonsqueezy.com/checkout/buy/";

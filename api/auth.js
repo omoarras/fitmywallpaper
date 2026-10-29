@@ -1,6 +1,6 @@
 // POST {credential} from "Sign in with Google" → creates account (2 free wallpapers) and session.
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { db, userKey, json, sessionCookie, FREE_WALLPAPERS, getCredits } from "./_lib.js";
+import { db, userKey, json, sessionCookie, FREE_WALLPAPERS, getCredits, googleClientId } from "./_lib.js";
 
 const JWKS = createRemoteJWKSet(new URL("https://www.googleapis.com/oauth2/v3/certs"));
 
@@ -8,7 +8,7 @@ async function verifyGoogle(token) {
   if (globalThis.__TEST_VERIFY_GOOGLE__) return globalThis.__TEST_VERIFY_GOOGLE__(token);
   const { payload } = await jwtVerify(token, JWKS, {
     issuer: ["https://accounts.google.com", "accounts.google.com"],
-    audience: process.env.GOOGLE_CLIENT_ID,
+    audience: googleClientId(),
   });
   return payload;
 }
