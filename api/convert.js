@@ -20,7 +20,7 @@ function ratioText(w, h) {
   if (a <= 32 && b <= 32) return `${a}:${b}`;
   return w >= h ? `${(w / h * 9).toFixed(1).replace(/\.0$/, "")}:9` : `9:${(h / w * 9).toFixed(1).replace(/\.0$/, "")}`;
 }
-// Controlled outpainting prompt; target fields filled from the user's selection.
+// The user's controlled-outpainting prompt, word for word (as used in ChatGPT); target fields filled from the user's selection.
 function buildPrompt(w, h, device) {
   const orient = w > h ? "Landscape" : w < h ? "Portrait" : "Square";
   const r = ratioText(w, h);
@@ -65,7 +65,7 @@ Preserve the original image's visual appearance and composition.
 The transition between the original photograph and the generated areas must be natural and unobtrusive.
 The final canvas must match the user's selected aspect ratio.
 The final export must have the exact pixel dimensions required by the selected device.
-IMPORTANT: The AI model must generate only the missing regions (the transparent area of the supplied canvas). The application preserves and composites the original pixels independently of the model's output.`;
+IMPORTANT: The AI model must generate only the missing regions. The application must preserve and composite the original pixels independently of the model's output. Do not rely on prompt instructions alone to protect the original image.`;
 }
 
 export async function POST(request) {

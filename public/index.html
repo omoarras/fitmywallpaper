@@ -876,11 +876,12 @@ async function make() {
   startWorking();
   try {
     let data;
-    const prep = await prepareCanvas(photoDataUrl, w, h);
+    const prep = DEMO ? await prepareCanvas(photoDataUrl, w, h) : null;
     if (DEMO) { await new Promise((r) => setTimeout(r, 2500)); data = { image: prep.image, credits: 1 }; }
     else {
       const device = $("chosenName").textContent;
-      const r = await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: prep.image, mask: prep.mask, device, width: w, height: h, quality }) });
+      // Same as ChatGPT: send the plain photo and let the model draw the whole wallpaper.
+      const r = await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: photoDataUrl, device, width: w, height: h, quality }) });
       data = await r.json().catch(() => ({}));
       if (data.needLogin) { stopWorking(); me = null; renderAccount(); pendingMake = true; return showSignIn(); }
       if (data.needUpgrade) { stopWorking(); return goPlans(); }
@@ -888,7 +889,7 @@ async function make() {
       if (!r.ok || !data.image) throw new Error(data.error || "Something went wrong. Your wallpaper wasn't charged. Try again.");
     }
     if (me && typeof data.credits === "number") { me.credits = data.credits; renderAccount(); }
-    resultBlob = await compositeLocked(data.image, photoDataUrl, w, h);
+    resultBlob = DEMO ? await compositeLocked(data.image, photoDataUrl, w, h) : await fitExactly(data.image, w, h);
     marked = data.mark !== false;
     if (marked) resultBlob = await addMark(resultBlob, w, h);
     stopWorking();
