@@ -60,7 +60,7 @@ Preserve the original image exactly; only adapt it to the target aspect ratio.`;
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST." });
 
-  const key = process.env.OPENAI_API_KEY;
+  const key = process.env.OPENAI_API_KEY || process.env.OPEN_API_KEY;
   if (!key) return res.status(500).json({ error: "Server is missing its API key." });
 
   const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
