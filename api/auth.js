@@ -14,7 +14,7 @@ async function verifyGoogle(token) {
   return payload;
 }
 
-const FREE_PER_NETWORK_PER_DAY = 3;
+const FREE_PER_NETWORK_PER_DAY = 2;
 const clientIp = (req) => (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
 
 // One free gift per device, and at most a few new free accounts per network per day.

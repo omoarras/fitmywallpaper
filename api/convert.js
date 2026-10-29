@@ -1,5 +1,5 @@
 // POST {image, width, height, quality:"standard"|"ultra"} → wallpaper. Uses the person's wallpaper balance.
-import { getSession, takeCredits, giveCredits, isPaid, json, COST } from "./_lib.js";
+import { getSession, takeCredits, giveCredits, isPaid, json, COST, db, userKey } from "./_lib.js";
 
 const MODEL = process.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
 const QUALITY = { standard: "medium", ultra: "high" };
@@ -106,8 +106,11 @@ export async function POST(request) {
     }
     const b64 = data?.data?.[0]?.b64_json;
     if (!b64) throw Object.assign(new Error("No image came back. Please try again."), { user: true });
-    let mark = true;
-    try { mark = !(await isPaid(s.sub)); } catch {}
+    // Free users: first wallpaper is clean, later ones carry the small Pawlo mark. Plan holders: never marked.
+    let mark = false;
+    try {
+      if (!(await isPaid(s.sub))) mark = (await db().hincrby(userKey(s.sub), "free_made", 1)) > 1;
+    } catch (e) { console.error(e); }
     return json({ image: `data:image/webp;base64,${b64}`, credits: left, mark });
   } catch (e) {
     await giveCredits(s.sub, cost).catch((err) => console.error("refund failed", err));
