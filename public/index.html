@@ -432,6 +432,7 @@ footer a{color:var(--ink);text-underline-offset:3px}
           <div class="island"></div>
           <div class="lock" id="lock"><div class="date" id="lockDate"></div><div class="time" id="lockTime"></div></div>
         </div>
+        <p class="hint" id="markNote" style="text-align:center;margin:-4px 0 12px" hidden>Remove the Pawlo mark · <button class="linkbtn" id="markUpg" type="button" style="padding:0">Upgrade</button></p>
         <div class="cmp" id="cmp">
           <label class="sr" for="slider">Compare before and after</label>
           <input type="range" id="slider" min="0" max="100" value="50">
@@ -542,7 +543,7 @@ const GROUPS = [
 ];
 const ALL = GROUPS.flatMap((g) => (g.models || []).map((m) => ({ g: g.id, name: m[0], w: m[1], h: m[2] })));
 
-let quality = "standard", photoDataUrl = null, resultBlob = null;
+let marked = false, quality = "standard", photoDataUrl = null, resultBlob = null;
 let pick = { g: "auto" };   // {g, name, w, h}
 const COST = { standard: 1, ultra: 3 };
 const PLANS = { 10: { name: "Basic", price: 5 }, 30: { name: "Pro", price: 10 }, 100: { name: "Max", price: 20 } };
@@ -553,6 +554,8 @@ const store = {
   get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
   del(k) { try { sessionStorage.removeItem(k); } catch {} },
+  dev() { try { return localStorage.getItem("fmw_dev") || ""; } catch { return ""; } },
+  setDev(v) { try { if (v) localStorage.setItem("fmw_dev", v); } catch {} },
 };
 
 // ---------- Pawlo the guide ----------
@@ -820,11 +823,13 @@ async function showSignIn(title) {
 async function onGoogle(resp) {
   hideError();
   try {
-    const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential: resp.credential }) });
+    const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential: resp.credential, device: store.dev() }) });
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || "Sign-in didn't work. Try again.");
     me = { name: d.name, email: d.email, credits: d.credits, paid: !!d.paid };
+    store.setDev(d.device);
     renderAccount();
+    if (d.freeDenied) { pendingMake = false; return showBuy("Free wallpapers were already used on this device"); }
     if (pendingBuy) { const n = pendingBuy; pendingBuy = 0; return buy(n); }
     if (pendingMake) { pendingMake = false; make(); } else guideForState();
   } catch (e) { showError(e.message); }
@@ -883,6 +888,8 @@ async function make() {
     }
     if (me && typeof data.credits === "number") { me.credits = data.credits; renderAccount(); }
     resultBlob = await compositeLocked(data.image, photoDataUrl, w, h);
+    marked = data.mark !== false;
+    if (marked) resultBlob = await addMark(resultBlob, w, h);
     stopWorking();
     showResult(w, h);
   } catch (e) {
@@ -905,6 +912,7 @@ function showResult(w, h) {
   $("lockTime").textContent = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(/\s?[AP]M/i, "");
   $("lockDate").textContent = now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
   $("resultSize").textContent = `${w} × ${h} pixels, exactly your screen.`;
+  $("markNote").hidden = !marked;
   $("result").classList.add("open");
   const j = $("jumpPawlo"); j.classList.remove("pop"); void j.offsetWidth; j.classList.add("pop");
   say("Done! Save it, then set it as your wallpaper.", "phone");
@@ -919,6 +927,7 @@ function setCompare(on) {
 }
 function moveSplit(v) { $("beforeImg").style.clipPath = `inset(0 ${100 - v}% 0 0)`; $("split").style.left = v + "%"; }
 $("slider").addEventListener("input", (e) => moveSplit(e.target.value));
+$("markUpg").addEventListener("click", goPlans);
 $("compareBtn").addEventListener("click", () => setCompare(!$("cmp").classList.contains("on")));
 $("again").addEventListener("click", () => {
   $("result").classList.remove("open");
@@ -970,6 +979,25 @@ async function compositeLocked(resultSrc, origSrc, w, h) {
   if (r.x > 1) { fade(0, 0, f, 0, 0, 0, f, t.height); fade(t.width, 0, t.width - f, 0, t.width - f, 0, f, t.height); }
   if (r.y > 1) { fade(0, 0, 0, f, 0, 0, t.width, f); fade(0, t.height, 0, t.height - f, 0, t.height - f, t.width, f); }
   x.drawImage(t, Math.round(r.x), Math.round(r.y));
+  return new Promise((ok, bad) => c.toBlob((b) => (b ? ok(b) : bad()), "image/jpeg", 0.95));
+}
+
+// Small "Made with Pawlo" badge on free wallpapers (bottom right, above the phone's dock area).
+async function addMark(blob, w, h) {
+  const [img, head] = await Promise.all([loadImg(URL.createObjectURL(blob)), loadImg("/brand/favicon-256.png")]);
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d"); x.drawImage(img, 0, 0, w, h);
+  const u = Math.max(14, Math.round(Math.min(w, h) * 0.035));
+  x.font = `600 ${u}px Figtree, system-ui, sans-serif`;
+  const label = "Made with Pawlo", tw = x.measureText(label).width;
+  const ph = Math.round(u * 2.1), pw = Math.round(tw + ph + u * 1.2);
+  const px = w - pw - Math.round(u * 1.2), py = h - ph - Math.round(h * 0.06);
+  x.globalAlpha = 0.85; x.fillStyle = "#FBF8F1";
+  x.beginPath(); x.roundRect(px, py, pw, ph, ph / 2); x.fill();
+  x.globalAlpha = 1;
+  x.drawImage(head, px + u * 0.25, py + (ph - ph * 0.86) / 2, ph * 0.86, ph * 0.86);
+  x.fillStyle = "#1C1814"; x.textBaseline = "middle";
+  x.fillText(label, px + ph + u * 0.2, py + ph / 2 + 1);
   return new Promise((ok, bad) => c.toBlob((b) => (b ? ok(b) : bad()), "image/jpeg", 0.95));
 }
 
@@ -1071,7 +1099,7 @@ if (DEMO) (async () => {
   if (DEMO === "buy") showBuy("You've used your free wallpapers");
   if (DEMO === "error") showError("Our image service is busy. Try again in a minute. Your wallpaper wasn't charged.");
   if (DEMO === "wait") { startWorking(); }
-  if (DEMO === "result") { const [w, h] = currentSize(); const prep = await prepareCanvas(photoDataUrl, w, h); resultBlob = await compositeLocked(prep.image, photoDataUrl, w, h); showResult(w, h); }
+  if (DEMO === "result") { const [w, h] = currentSize(); const prep = await prepareCanvas(photoDataUrl, w, h); resultBlob = await compositeLocked(prep.image, photoDataUrl, w, h); marked = true; resultBlob = await addMark(resultBlob, w, h); showResult(w, h); }
 })();
 </script>
 </body>

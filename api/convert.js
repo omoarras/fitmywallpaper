@@ -106,7 +106,9 @@ export async function POST(request) {
     }
     const b64 = data?.data?.[0]?.b64_json;
     if (!b64) throw Object.assign(new Error("No image came back. Please try again."), { user: true });
-    return json({ image: `data:image/webp;base64,${b64}`, credits: left });
+    let mark = true;
+    try { mark = !(await isPaid(s.sub)); } catch {}
+    return json({ image: `data:image/webp;base64,${b64}`, credits: left, mark });
   } catch (e) {
     await giveCredits(s.sub, cost).catch((err) => console.error("refund failed", err));
     console.error(e);

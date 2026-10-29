@@ -17,11 +17,12 @@ const DEFAULT_LINKS = {
 export const PACKS = { 10: "LS_CHECKOUT_10", 30: "LS_CHECKOUT_30", 100: "LS_CHECKOUT_100" };
 export const checkoutLink = (n) => (PACKS[n] && (process.env[PACKS[n]] || DEFAULT_LINKS[n])) || null;
 
-export const json = (data, status = 200, headers = {}) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...headers },
-  });
+export const json = (data, status = 200, headers = {}) => {
+  const h = new Headers(headers);
+  h.set("Content-Type", "application/json");
+  h.set("Cache-Control", "no-store");
+  return new Response(JSON.stringify(data), { status, headers: h });
+};
 
 // ---------- Database (Upstash Redis, added from Vercel Storage) ----------
 let _redis = globalThis.__TEST_REDIS__ || null;
