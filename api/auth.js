@@ -1,7 +1,7 @@
 // POST {credential} from "Sign in with Google" → creates account (2 free wallpapers) and session.
 import crypto from "node:crypto";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { db, userKey, json, sessionCookie, FREE_WALLPAPERS, getCredits, isPaid, googleClientId } from "./_lib.js";
+import { db, userKey, json, sessionCookie, FREE_WALLPAPERS, getCredits, isPaid, ownerTopUp, googleClientId } from "./_lib.js";
 
 const JWKS = createRemoteJWKSet(new URL("https://www.googleapis.com/oauth2/v3/certs"));
 
@@ -51,6 +51,7 @@ export async function POST(request) {
     let freeDenied = false;
     if (isNew) freeDenied = !(await grantFree(g.sub, [cookieDev, pageDev, device], clientIp(request)));
 
+    await ownerTopUp(g.sub, g.email);
     const user = { sub: g.sub, email: g.email || "", name: g.given_name || g.name || "" };
     const headers = new Headers();
     headers.append("Set-Cookie", sessionCookie(user));

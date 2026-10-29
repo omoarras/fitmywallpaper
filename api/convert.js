@@ -1,5 +1,5 @@
 // POST {image, width, height, quality:"standard"|"ultra"} → wallpaper. Uses the person's wallpaper balance.
-import { getSession, takeCredits, giveCredits, isPaid, json, COST, db, userKey } from "./_lib.js";
+import { getSession, takeCredits, giveCredits, isPaid, ownerTopUp, json, COST, db, userKey } from "./_lib.js";
 
 const MODEL = process.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
 const QUALITY = { standard: "medium", ultra: "high" };
@@ -47,6 +47,7 @@ export async function POST(request) {
   let gw, gh;
   try { [gw, gh] = generationSize(w, h); } catch (e) { return json({ error: e.message }, 400); }
 
+  try { await ownerTopUp(s.sub, s.email); } catch (e) { console.error(e); }
   if (tier === "ultra") {
     let paid = false;
     try { paid = await isPaid(s.sub); } catch (e) { console.error(e); }
