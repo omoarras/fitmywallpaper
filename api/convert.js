@@ -23,7 +23,38 @@ function ratioText(w, h) {
 function buildPrompt(w, h) {
   const orient = w > h ? "landscape" : w < h ? "portrait" : "square";
   const r = ratioText(w, h);
-  return `Convert this image into a ${w}×${h} (${r}) ${orient} wallpaper while preserving the exact visual composition of the original image. Composition is the highest priority. The apparent crop, framing, camera position, focal length, perspective, subject placement, subject size, and visual balance must remain identical. The final image should look like the original photograph simply exists on a wider canvas—not like the camera moved, zoomed, or revealed more of the scene. Do NOT zoom out. Do NOT widen the field of view. Do NOT reveal additional portions of objects or the environment. Do NOT reposition or resize any existing element. The visible area of every object should remain visually identical to the original. Adapt the image to ${w}×${h} by reconstructing only what is absolutely necessary to preserve the original composition at the new aspect ratio. Any generated content must seamlessly continue existing textures, lighting, reflections, shadows, colors, grain, and geometry without attracting attention or altering the scene. Treat the original composition as locked. If preserving the composition conflicts with showing more of the environment, always preserve the composition. Output a sharp native ${w}×${h} image with identical color grading, contrast, noise, sharpness, and lighting. The viewer should perceive the exact same photograph, only reformatted to ${r}, with no visible AI edits or composition changes. Composition Lock: 100% Camera locked. Lens locked. Perspective locked. Crop perception locked. Subject scale locked. Subject positions locked. Visual balance locked. No zoom. No pan. No camera movement. No additional scene revealed. Preserve the original image exactly; only adapt it to the target aspect ratio.`;
+  const target = `${w}×${h} (${r}) ${orient}`;
+  return `Canvas expansion
+Expand the canvas to ${target} using only the minimum necessary outpainting. Preserve the source image's original crop and scale. Do not zoom, pan, stretch, distort, or resize the original image.
+
+Where new pixels are required, continue the existing scene naturally. Match the textures, materials, seams, perspective, shadows, and lighting of the surrounding surfaces. Maintain physically plausible geometry and realistic boundaries between objects, clothing, people and animals.
+
+Do not fill the new areas with large smooth shapes or repeated textures. Do not create extra arms, hands, fingers, limbs, paws, object sections, or duplicate objects. Do not blend a person's or animal's clothing or fur into the background.
+
+Strict editing rule: Never regenerate the people, animals, or the original visible portions of the scene. If an area cannot be extended reliably, use a conservative, unobtrusive continuation of the surrounding background rather than inventing details.
+
+Maintain the original color grading, exposure, grain, sharpness, and natural smartphone-camera appearance. Output a clean, photorealistic ${w}×${h} wallpaper without visible AI artifacts.
+
+Negative constraints: giant hands, distorted fingers, elongated surfaces, giant flat strips, stretched textures, warped geometry, duplicated limbs, extra fingers, melted clothing, invented objects, altered faces, changed body proportions, excessive outpainting, composition changes, artificial smoothing.
+
+Convert this image into a ${target} wallpaper while preserving the exact visual composition of the original image. Composition is the highest priority. The apparent crop, framing, camera position, focal length, perspective, subject placement, subject size, and visual balance must remain identical. The final image should look like the original photograph simply exists on a larger canvas—not like the camera moved, zoomed, or revealed more of the scene.
+Do NOT zoom out. Do NOT widen the field of view. Do NOT reveal additional portions of objects or the environment. Do NOT reposition or resize any existing element. The visible area of every object should remain visually identical to the original.
+Adapt the image to ${w}×${h} by reconstructing only what is absolutely necessary to preserve the original composition at the new aspect ratio. Any generated content must seamlessly continue existing textures, lighting, reflections, shadows, colors, grain, and geometry without attracting attention or altering the scene.
+Treat the original composition as locked. If preserving the composition conflicts with showing more of the environment, always preserve the composition.
+Output a sharp native image with identical color grading, contrast, noise, sharpness, and lighting. The viewer should perceive the exact same photograph, only reformatted to ${target}, with no visible AI edits or composition changes.
+Composition Lock: 100%
+Camera locked.
+Lens locked.
+Perspective locked.
+Crop perception locked.
+Subject scale locked.
+Subject positions locked.
+Visual balance locked.
+No zoom.
+No pan.
+No camera movement.
+No additional scene revealed.
+Preserve the original image exactly; only adapt it to the target aspect ratio.`;
 }
 
 export async function POST(request) {
