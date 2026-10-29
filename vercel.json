@@ -1,0 +1,4 @@
+{
+  "outputDirectory": "public",
+  "functions": { "api/convert.js": { "maxDuration": 300 } }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "fitmywallpaper",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" }
+}
