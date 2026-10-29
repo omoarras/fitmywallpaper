@@ -3,23 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fit My Wallpaper – Make Any Photo Fit Your Phone in HD &amp; 4K</title>
+<title>Pawlo – Fit My Wallpaper | Make Any Photo Fit Your Phone in HD &amp; 4K</title>
 <meta name="description" content="Convert any low quality photo into high 4K to match your device. No stretching, no blur – pick your phone or tablet and get a perfect wallpaper in one tap.">
 <link rel="canonical" href="https://fit-my-wallpaper.vercel.app/">
-<meta name="theme-color" content="#6a2bd9">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#FBF8F1">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/brand/favicon-256.png" sizes="256x256" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Fit My Wallpaper – Any Photo, Perfect on Your Screen">
+<meta property="og:site_name" content="Pawlo">
+<meta property="og:title" content="Pawlo – make any photo fit your screen">
 <meta property="og:description" content="Convert any low quality photo into high 4K to match your device.">
 <meta property="og:url" content="https://fit-my-wallpaper.vercel.app/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://fit-my-wallpaper.vercel.app/brand/pawlo-logo.png">
+<meta name="twitter:card" content="summary_large_image">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Fit My Wallpaper",
+  "name": "Pawlo – Fit My Wallpaper",
+  "alternateName": "Fit My Wallpaper",
   "url": "https://fit-my-wallpaper.vercel.app/",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Any",
@@ -32,317 +37,645 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type":"Question","name":"Why does my photo quality drop when I set it as my wallpaper?",
-     "acceptedAnswer":{"@type":"Answer","text":"Your phone zooms and crops any photo that doesn't match its screen shape, and stretches small photos to fill the screen. Both make it blurry. Fit My Wallpaper rebuilds the photo at your exact screen size, so nothing is zoomed or stretched."}},
+     "acceptedAnswer":{"@type":"Answer","text":"Your phone zooms and crops any photo that doesn't match its screen shape, and stretches small photos to fill the screen. Both make it blurry. Pawlo rebuilds the photo at your exact screen size, so nothing is zoomed or stretched."}},
     {"@type":"Question","name":"How do I make a picture fit my phone screen without cropping or stretching?",
-     "acceptedAnswer":{"@type":"Answer","text":"Choose your photo, pick your phone from the list (or let us detect it), and tap Make My Wallpaper. You get an image at your screen's exact resolution."}},
+     "acceptedAnswer":{"@type":"Answer","text":"Choose your photo, pick your phone (or let Pawlo detect it), and tap Make my wallpaper. You get an image at your screen's exact resolution."}},
     {"@type":"Question","name":"How do I turn a portrait photo into a landscape (horizontal) wallpaper?",
-     "acceptedAnswer":{"@type":"Answer","text":"Pick a landscape device such as a laptop or TV, or choose Landscape for a tablet. The original framing is kept and only the missing edges are filled in to match."}},
+     "acceptedAnswer":{"@type":"Answer","text":"Pick a computer or TV, or choose Sideways for a tablet or phone. The original framing is kept and only the missing edges are filled in."}},
     {"@type":"Question","name":"Can I make a low quality photo into an HD or 4K wallpaper?",
-     "acceptedAnswer":{"@type":"Answer","text":"Yes. Every result is rendered at high resolution, up to 4K, then sized exactly for your device."}}
+     "acceptedAnswer":{"@type":"Answer","text":"Yes. Every wallpaper is rebuilt at high resolution, up to 4K, then sized exactly for your device."}},
+    {"@type":"Question","name":"Is it free?",
+     "acceptedAnswer":{"@type":"Answer","text":"Your first 2 wallpapers are free. After that, packs start at 10 wallpapers for $2.99. You pay once and they never expire."}}
   ]
 }
 </script>
 
+<link rel="preload" href="/fonts/kalam-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
 <style>
-  :root{
-    --purple:#6a2bd9; --purple-dark:#4b1a9e; --purple-soft:#f3edff; --purple-line:#d9c9fb;
-    --ink:#22183a; --muted:#5e5378; --white:#ffffff; --danger:#b42318;
-    --radius:18px;
-  }
-  *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%}
-  body{margin:0;background:var(--white);color:var(--ink);
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:19px;line-height:1.5}
-  header{background:var(--purple);color:var(--white);padding:28px 16px 34px;text-align:center}
-  header h1{margin:0;font-size:clamp(28px,6vw,40px);letter-spacing:-.5px}
-  header p{margin:8px auto 0;max-width:560px;font-size:clamp(17px,4vw,20px);opacity:.95}
-  main{max-width:620px;margin:-18px auto 0;padding:0 16px 48px}
-  .card{background:var(--white);border:2px solid var(--purple-line);border-radius:var(--radius);
-    padding:22px 18px;box-shadow:0 8px 28px rgba(74,26,158,.10)}
-  .step{margin-bottom:26px}
-  .step:last-child{margin-bottom:0}
-  .step-title{display:flex;align-items:center;gap:12px;font-weight:700;font-size:21px;margin-bottom:12px}
-  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--purple);color:#fff;
-    display:grid;place-items:center;font-size:18px}
-  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:62px;
-    border:none;border-radius:14px;font:inherit;font-weight:700;font-size:21px;cursor:pointer;
-    background:var(--purple);color:#fff;padding:12px 18px;text-decoration:none}
-  .btn:hover{background:var(--purple-dark)}
-  .btn:focus-visible,select:focus-visible,input:focus-visible{outline:4px solid #b79cff;outline-offset:2px}
-  .btn.light{background:var(--purple-soft);color:var(--purple-dark);border:2px solid var(--purple-line)}
-  .btn.light:hover{background:#e9defd}
-  .btn[disabled]{opacity:.5;cursor:not-allowed}
-  .preview{display:none;margin-top:14px;border-radius:12px;overflow:hidden;border:2px solid var(--purple-line);background:var(--purple-soft)}
-  .preview img{display:block;width:100%;max-height:340px;object-fit:contain}
-  select,input[type=number]{width:100%;min-height:58px;font:inherit;font-size:19px;color:var(--ink);
-    border:2px solid var(--purple-line);border-radius:12px;padding:10px 14px;background:#fff}
-  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--purple) 50%),linear-gradient(135deg,var(--purple) 50%,transparent 50%);
-    background-position:calc(100% - 24px) 50%,calc(100% - 16px) 50%;background-size:8px 8px;background-repeat:no-repeat;padding-right:44px}
-  .row{display:flex;gap:12px;margin-top:12px}
-  .row > *{flex:1}
-  label.small{display:block;font-size:16px;color:var(--muted);margin-bottom:4px}
-  .toggle{display:flex;border:2px solid var(--purple-line);border-radius:12px;overflow:hidden;margin-top:12px}
-  .toggle button{flex:1;min-height:54px;font:inherit;font-size:18px;font-weight:600;border:none;background:#fff;color:var(--purple-dark);cursor:pointer}
-  .toggle button.on{background:var(--purple);color:#fff}
-  .hint{font-size:16px;color:var(--muted);margin:8px 2px 0}
-  #custom{display:none}
-  #status{display:none;text-align:center;padding:22px 10px}
-  .spinner{width:56px;height:56px;border-radius:50%;border:6px solid var(--purple-soft);border-top-color:var(--purple);
-    margin:0 auto 14px;animation:spin 1s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  @media (prefers-reduced-motion:reduce){.spinner{animation-duration:3s}}
-  .error{display:none;background:#fff1f0;border:2px solid #f5c2bd;color:var(--danger);border-radius:12px;padding:14px;margin-top:14px;font-weight:600}
-  #result{display:none;margin-top:6px}
-  #result img{display:block;width:100%;border-radius:12px;border:2px solid var(--purple-line)}
-  #result .btn{margin-top:12px}
-  .done{font-size:21px;font-weight:700;text-align:center;margin:0 0 12px;color:var(--purple-dark)}
-  section.info{margin-top:40px}
-  section.info h2{font-size:24px;color:var(--purple-dark);margin:0 0 6px}
-  details{border:2px solid var(--purple-line);border-radius:14px;padding:4px 16px;margin-top:12px;background:#fff}
-  details[open]{background:var(--purple-soft)}
-  summary{cursor:pointer;font-weight:700;padding:12px 0;font-size:19px}
-  details p{margin:0 0 14px}
-  .account{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-    background:var(--purple-soft);border:2px solid var(--purple-line);border-radius:14px;padding:10px 14px;margin-bottom:20px;font-size:17px}
-  .account b{color:var(--purple-dark)}
-  .linkbtn{background:none;border:none;font:inherit;font-size:16px;color:var(--purple-dark);text-decoration:underline;cursor:pointer;padding:6px}
-  .panel{display:none;margin-top:14px;border:2px solid var(--purple-line);border-radius:16px;padding:18px;background:#fff;text-align:center}
-  .panel h3{margin:0 0 6px;font-size:22px;color:var(--purple-dark)}
-  .panel p{margin:0 0 14px}
-  #gbtn{display:flex;justify-content:center;min-height:48px}
-  .packs{display:grid;gap:12px}
-  .pack{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:72px;text-align:left;
-    border:2px solid var(--purple-line);border-radius:14px;background:#fff;padding:12px 16px;font:inherit;color:var(--ink);cursor:pointer}
-  .pack:hover{border-color:var(--purple);background:var(--purple-soft)}
-  .pack.best{border-color:var(--purple);box-shadow:0 0 0 3px #e6dbff}
-  .pack .n{font-size:20px;font-weight:700}
-  .pack .each{display:block;font-size:15px;color:var(--muted)}
-  .pack .price{font-size:22px;font-weight:800;color:var(--purple-dark);white-space:nowrap}
-  .tag{display:inline-block;background:var(--purple);color:#fff;font-size:13px;font-weight:700;border-radius:999px;padding:2px 10px;margin-left:6px;vertical-align:middle}
-  footer{text-align:center;color:var(--muted);font-size:15px;padding:24px 16px 36px;border-top:2px solid var(--purple-soft)}
+@font-face{font-family:"Kalam";font-weight:400;font-style:normal;font-display:swap;src:url(/fonts/kalam-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Kalam";font-weight:700;font-style:normal;font-display:swap;src:url(/fonts/kalam-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Figtree";font-weight:400;font-style:normal;font-display:swap;src:url(/fonts/figtree-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Figtree";font-weight:500;font-style:normal;font-display:swap;src:url(/fonts/figtree-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Figtree";font-weight:600;font-style:normal;font-display:swap;src:url(/fonts/figtree-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Figtree";font-weight:700;font-style:normal;font-display:swap;src:url(/fonts/figtree-latin-700-normal.woff2) format("woff2")}
+:root{
+  --cream:#FBF8F1;      /* page, from the logo */
+  --paper:#FFFFFF;      /* the tool sheet */
+  --ink:#1C1814;        /* Pawlo's line colour */
+  --ink-soft:#5B534A;   /* secondary text */
+  --line:#E7DFD0;       /* hairlines and borders */
+  --orange:#FF6A00;     /* the paw on the cap */
+  --orange-soft:#FFEEDF;
+  --orange-deep:#B84A00;/* orange text that must pass contrast */
+  --danger:#B42318;
+  --hand:"Kalam","Comic Neue",cursive;
+  --sans:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.55}
+img{max-width:100%;display:block}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:3px;border-radius:10px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- top bar ---------- */
+.top{max-width:1120px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand img{height:64px;width:auto}
+.top-actions{display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);font-size:16px;font-weight:600;cursor:pointer}
+.chip:hover{border-color:var(--ink)}
+.chip svg{width:20px;height:20px}
+.chip b{color:var(--orange-deep)}
+#langBox{position:relative}
+#langMenu,.menu{position:absolute;right:0;top:52px;z-index:20;background:var(--paper);border:1.5px solid var(--ink);border-radius:16px;padding:8px;min-width:200px;display:none;box-shadow:4px 4px 0 var(--ink)}
+#langMenu.open,.menu.open{display:block}
+#langMenu button,.menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:16px}
+#langMenu button:hover,.menu button:hover{background:var(--orange-soft)}
+#google_translate_element{display:none}
+body{top:0!important}
+.goog-te-banner-frame,.skiptranslate iframe{display:none!important}
+
+/* ---------- hero ---------- */
+.hero{max-width:1120px;margin:0 auto;padding:6px 16px 0;position:relative}
+.hero h1{font-family:var(--hand);font-weight:700;font-size:clamp(38px,8.4vw,68px);line-height:1.02;letter-spacing:-.01em;margin:0;max-width:16ch}
+.hero p{margin:10px 0 0;color:var(--ink-soft);font-size:clamp(17px,2.4vw,20px);max-width:44ch}
+.doodles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+@media (max-width:700px){.doodles{display:none}}
+.doodles svg{position:absolute;stroke:var(--ink);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.doodles .o{stroke:var(--orange)}
+
+/* ---------- layout ---------- */
+.stage{max-width:1120px;margin:0 auto;padding:22px 16px 40px;display:grid;grid-template-columns:minmax(0,620px) 1fr;gap:40px;align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:1fr;gap:0}}
+
+/* Pawlo guide */
+.guide{position:sticky;top:20px;display:flex;flex-direction:column;align-items:center;padding-top:30px}
+.guide img{width:min(320px,100%);height:auto;transition:opacity .25s}
+.bubble{position:relative;background:var(--paper);border:2px solid var(--ink);border-radius:22px;padding:14px 18px;font-family:var(--hand);font-size:22px;line-height:1.3;max-width:320px;margin-bottom:6px}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-12px;width:20px;height:20px;background:var(--paper);border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateX(-50%) rotate(45deg)}
+@media (max-width:900px){
+  .guide{position:static;flex-direction:row-reverse;align-items:flex-end;justify-content:flex-end;gap:6px;padding-top:0;margin-bottom:-6px;order:-1}
+  .guide img{width:104px;flex:none}
+  .bubble{font-size:19px;padding:10px 14px;margin-bottom:28px;max-width:none;flex:1}
+  .bubble::after{left:auto;right:-12px;bottom:18px;transform:rotate(-45deg)}
+}
+.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:translateY(8px) scale(.94)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}}
+
+/* ---------- the tool sheet ---------- */
+.sheet{background:var(--paper);border:2px solid var(--ink);border-radius:28px;box-shadow:6px 6px 0 var(--ink);overflow:hidden}
+.step{padding:22px 22px 24px;border-top:1.5px dashed var(--line)}
+.step:first-child{border-top:0}
+.step h2{display:flex;align-items:center;gap:12px;margin:0 0 14px;font-size:21px;font-weight:700}
+.num{flex:none;width:36px;height:36px;display:grid;place-items:center;font-family:var(--hand);font-weight:700;font-size:22px;border:2px solid var(--ink);border-radius:50% 46% 52% 48%;background:var(--orange-soft)}
+.step.done .num{background:var(--orange)}
+.hint{font-size:15.5px;color:var(--ink-soft);margin:10px 2px 0}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:62px;padding:12px 20px;border:2px solid var(--ink);border-radius:18px;background:var(--orange);color:var(--ink);font-size:20px;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s, box-shadow .08s}
+.btn:hover{background:#FF7A1A}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn[disabled]{background:#F3E9DC;color:#8C8174;border-color:#C9BFB1;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:var(--paper)}
+.btn.ghost:hover{background:var(--orange-soft)}
+.btn svg{width:24px;height:24px;flex:none}
+
+/* icon in an orange circle */
+.ico{flex:none;width:44px;height:44px;border-radius:50%;background:var(--orange-soft);display:grid;place-items:center;color:var(--orange-deep)}
+.ico svg{width:24px;height:24px;fill:currentColor}
+
+/* photo picker */
+.photo-drop{display:flex;align-items:center;gap:16px;width:100%;padding:16px;border:2px dashed var(--ink);border-radius:20px;background:var(--cream);cursor:pointer;text-align:left}
+.photo-drop:hover{background:var(--orange-soft)}
+.photo-drop strong{display:block;font-size:20px;color:var(--ink)}
+.photo-drop span{color:var(--ink-soft);font-size:15.5px}
+.photo-drop .ico{width:56px;height:56px;background:var(--orange);color:var(--ink)}
+.photo-drop .ico svg{width:30px;height:30px}
+.picked{display:none;align-items:center;gap:14px}
+.picked img{width:84px;height:84px;object-fit:cover;border-radius:14px;border:2px solid var(--ink)}
+.picked .linkbtn{margin-left:auto}
+.linkbtn{background:none;border:0;padding:8px;font-size:16px;font-weight:600;color:var(--orange-deep);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* device picker */
+.search{position:relative}
+.search input{width:100%;min-height:56px;padding:12px 16px 12px 48px;border:2px solid var(--ink);border-radius:16px;background:var(--paper);font-size:18px}
+.search svg{position:absolute;left:16px;top:50%;width:22px;height:22px;transform:translateY(-50%);fill:var(--ink-soft)}
+.results{margin-top:8px;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;display:none}
+.results button{display:flex;justify-content:space-between;gap:10px;width:100%;padding:12px 14px;border:0;border-top:1px solid var(--line);background:var(--paper);text-align:left;cursor:pointer;font-size:16.5px}
+.results button:first-child{border-top:0}
+.results button:hover{background:var(--orange-soft)}
+.results small{color:var(--ink-soft);white-space:nowrap}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media (max-width:480px){.cats{gap:8px}.cat{font-size:14px;padding:10px 4px 8px}.cat .ico{width:38px;height:38px}}
+.cat{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px 10px;border:1.5px solid var(--line);border-radius:16px;background:var(--paper);cursor:pointer;font-size:15.5px;font-weight:600}
+.cat:hover{border-color:var(--ink)}
+.cat[aria-pressed="true"]{border:2px solid var(--ink);background:var(--orange-soft)}
+.models{display:none;flex-wrap:wrap;gap:8px;margin-top:12px}
+.models.open{display:flex;max-height:236px;overflow-y:auto;padding:2px;border-bottom:1.5px dashed var(--line);padding-bottom:10px}
+.model{min-height:44px;padding:8px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);cursor:pointer;font-size:15.5px}
+.model:hover{border-color:var(--ink)}
+.model[aria-pressed="true"]{border:2px solid var(--ink);background:var(--orange);font-weight:700}
+.manual{display:none;margin-top:12px}
+.manual.open{display:block}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.manual label{display:block;font-size:15px;color:var(--ink-soft);margin-bottom:4px}
+.manual input{width:100%;min-height:52px;padding:10px 14px;border:2px solid var(--ink);border-radius:14px;font-size:18px;background:var(--paper)}
+.seg{display:flex;border:2px solid var(--ink);border-radius:16px;overflow:hidden;margin-top:12px;background:var(--paper)}
+.seg button{flex:1;min-height:52px;border:0;background:none;font-size:16.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button+button{border-left:2px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--orange)}
+.seg small{display:block;font-weight:500;font-size:13.5px;color:var(--ink-soft)}
+.seg button[aria-pressed="true"] small{color:var(--ink)}
+.chosen{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:16px;background:var(--cream);border:1.5px solid var(--line)}
+.chosen b{display:block;font-size:17px}
+.chosen span{font-size:15px;color:var(--ink-soft)}
+
+/* panels inside step 3 */
+.panel{display:none;margin-top:16px;padding:18px;border:2px solid var(--ink);border-radius:20px;background:var(--cream)}
+.panel.open{display:block}
+.panel h3{margin:0 0 4px;font-family:var(--hand);font-size:28px;line-height:1.15}
+.panel p{margin:0 0 14px;color:var(--ink-soft)}
+.panel .pose{width:120px;float:right;margin:-6px -6px 0 8px}
+#gbtn{min-height:48px;display:flex;justify-content:flex-start;clear:both}
+.error{display:none;gap:12px;align-items:center;margin-top:14px;padding:12px 14px;border:2px solid var(--danger);border-radius:16px;background:#FFF4F2;color:var(--danger);font-weight:600}
+.error.open{display:flex}
+.error img{width:64px;flex:none}
+
+/* waiting */
+#working{display:none;text-align:center;padding:4px 0}
+#working.open{display:block}
+#working img{width:200px;margin:0 auto}
+@media (min-width:901px){#working img{display:none}}
+.checklist{list-style:none;margin:10px auto 0;padding:0;max-width:300px;text-align:left}
+.checklist li{display:flex;align-items:center;gap:10px;padding:7px 0;color:var(--ink-soft);font-size:17px}
+.checklist li::before{content:"";flex:none;width:22px;height:22px;border:2px solid var(--line);border-radius:50%}
+.checklist li.now{color:var(--ink);font-weight:700}
+.checklist li.now::before{border-color:var(--orange);border-top-color:transparent;animation:spin 1s linear infinite}
+.checklist li.ok{color:var(--ink)}
+.checklist li.ok::before{border-color:var(--ink);background:var(--orange) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%231C1814' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.checklist li.now::before{animation:none}}
+.tip{margin-top:10px;font-family:var(--hand);font-size:20px;color:var(--orange-deep);min-height:2.6em}
+
+/* result */
+#result{display:none}
+#result.open{display:block}
+.ready{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ready img{width:92px}
+.ready h3{margin:0;font-family:var(--hand);font-size:clamp(25px,6vw,32px);line-height:1.1}
+.ready p{margin:2px 0 0;color:var(--ink-soft);font-size:16px}
+.device{position:relative;margin:4px auto 14px;border:10px solid var(--ink);border-radius:42px;overflow:hidden;background:var(--ink);box-shadow:6px 6px 0 var(--orange)}
+.device.land{border-width:10px;border-radius:16px}
+.device .layer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.device .before{clip-path:inset(0 50% 0 0)}
+.lock{position:absolute;left:0;right:0;top:9%;text-align:center;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.35);pointer-events:none}
+.lock .date{font-size:15px;font-weight:600}
+.lock .time{font-size:64px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.device.land .lock{display:none}
+.island{position:absolute;top:10px;left:50%;width:30%;height:22px;transform:translateX(-50%);background:var(--ink);border-radius:999px}
+.device.land .island{display:none}
+.cmp{display:none}
+.cmp.on{display:block}
+.cmp input{width:100%;accent-color:var(--orange)}
+.cmp .labels{display:flex;justify-content:space-between;font-size:14.5px;color:var(--ink-soft);margin-top:-4px}
+.split{position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.2);pointer-events:none}
+.actions{display:grid;gap:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ---------- pricing ---------- */
+.section{max-width:1120px;margin:0 auto;padding:40px 16px}
+.section h2{font-family:var(--hand);font-size:clamp(32px,5vw,44px);line-height:1.1;margin:0 0 6px}
+.section>p{margin:0 0 20px;color:var(--ink-soft);max-width:60ch}
+.pricing{display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center}
+@media (max-width:800px){.pricing{grid-template-columns:1fr}}
+.price-list{list-style:none;margin:0;padding:0;border:2px solid var(--ink);border-radius:24px;background:var(--paper);overflow:hidden}
+.price-list li{display:flex;align-items:center;gap:14px;padding:16px 18px;border-top:1.5px dashed var(--line)}
+.price-list li:first-child{border-top:0}
+.price-list .what{flex:1}
+.price-list .what b{display:block;font-size:19px}
+.price-list .what span{font-size:15px;color:var(--ink-soft)}
+.price-list .amt{font-family:var(--hand);font-weight:700;font-size:28px}
+.price-list .best{background:var(--orange-soft)}
+.tag{display:inline-block;margin-left:6px;padding:1px 10px;border:1.5px solid var(--ink);border-radius:999px;background:var(--orange);font-size:13px;font-weight:700;vertical-align:2px}
+.price-side{text-align:center}
+.price-side img{width:min(300px,80%);margin:0 auto}
+.price-side p{font-family:var(--hand);font-size:22px;margin:4px 0 0}
+
+/* packs inside the buy panel */
+.packs{display:grid;gap:10px;clear:both}
+.pack{display:flex;align-items:center;gap:12px;width:100%;min-height:68px;padding:10px 16px;border:2px solid var(--ink);border-radius:16px;background:var(--paper);cursor:pointer;text-align:left}
+.pack:hover{background:var(--orange-soft)}
+.pack.best{background:var(--orange);box-shadow:3px 3px 0 var(--ink)}
+.pack .what{flex:1}
+.pack .what b{display:block;font-size:18px}
+.pack .what span{font-size:14.5px;color:var(--ink-soft)}
+.pack.best .what span{color:var(--ink)}
+.pack .amt{font-family:var(--hand);font-weight:700;font-size:26px}
+
+/* ---------- FAQ ---------- */
+.faq{max-width:760px}
+details{border-top:1.5px dashed var(--line);padding:4px 0}
+details:last-of-type{border-bottom:1.5px dashed var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 2px;font-weight:700;font-size:18.5px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--hand);font-size:30px;line-height:1;color:var(--orange-deep);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 2px 16px;color:var(--ink-soft)}
+
+footer{max-width:1120px;margin:0 auto;padding:28px 16px 40px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;font-size:15.5px;color:var(--ink-soft);border-top:2px solid var(--ink)}
+footer img{height:40px;width:auto;margin-right:auto}
+footer a{color:var(--ink);text-underline-offset:3px}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Fit My Wallpaper</h1>
-  <p>Convert any low quality photo into high 4K to match your device. No stretching. No blur.</p>
+<header class="top">
+  <a class="brand" href="/" aria-label="Pawlo – fit my wallpaper, home"><img src="/brand/pawlo-lockup.webp" width="146" height="56" alt="Pawlo – fit my wallpaper"></a>
+  <div class="top-actions">
+    <div id="langBox">
+      <button class="chip" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm6.9 6h-3a15.7 15.7 0 00-1.4-3.6A8 8 0 0118.9 8zM12 4c.8 1.2 1.5 2.5 1.9 4h-3.8c.4-1.5 1.1-2.8 1.9-4zM4.3 14a8.2 8.2 0 010-4h3.4a16.5 16.5 0 000 4H4.3zm.8 2h3a15.7 15.7 0 001.4 3.6A8 8 0 015.1 16zm3-8h-3a8 8 0 014.4-3.6A15.7 15.7 0 008.1 8zM12 20c-.8-1.2-1.5-2.5-1.9-4h3.8c-.4 1.5-1.1 2.8-1.9 4zm2.3-6H9.7a14.7 14.7 0 010-4h4.6a14.7 14.7 0 010 4zm.2 5.6a15.7 15.7 0 001.4-3.6h3a8 8 0 01-4.4 3.6zm1.8-5.6a16.5 16.5 0 000-4h3.4a8.2 8.2 0 010 4h-3.4z"/></svg>
+        <span>Language</span>
+      </button>
+      <div id="langMenu" role="menu"></div>
+    </div>
+    <div id="acctBox" style="position:relative">
+      <button class="chip" id="acct" type="button" hidden aria-haspopup="true" aria-expanded="false"></button>
+      <div id="acctMenu" class="menu" role="menu">
+        <p class="hint" id="acctEmail" style="padding:4px 12px;margin:0"></p>
+        <button type="button" role="menuitem" id="acctBuy">Get more wallpapers</button>
+        <button type="button" role="menuitem" id="acctOut">Sign out</button>
+      </div>
+    </div>
+  </div>
+  <div id="google_translate_element"></div>
 </header>
 
-<main>
-  <div class="card" id="app">
-    <div class="account" id="account">
-      <span id="accountText">🎁 Your first 2 wallpapers are free</span>
-      <span>
-        <button class="linkbtn" id="buyLink" type="button" hidden>Get more</button>
-        <button class="linkbtn" id="logout" type="button" hidden>Sign out</button>
-      </span>
-    </div>
+<section class="hero" aria-labelledby="h1">
+  <div class="doodles" aria-hidden="true">
+    <svg style="right:8%;top:6px;width:54px;height:54px" viewBox="0 0 54 54" class="o"><path d="M27 6v12M27 36v12M6 27h12M36 27h12"/></svg>
+    <svg style="right:22%;top:58px;width:40px;height:62px" viewBox="0 0 40 62"><rect x="4" y="4" width="32" height="54" rx="8"/><path d="M15 10h10"/></svg>
+    <svg style="right:3%;top:84px;width:70px;height:40px" viewBox="0 0 70 40" class="o"><path d="M4 30c10-20 20-20 30 0s20 20 32-6"/></svg>
+  </div>
+  <h1 id="h1">Make any photo fit your screen.</h1>
+  <p>Sharp, never stretched. Pawlo rebuilds your picture at your phone's exact size, in HD or 4K.</p>
+</section>
 
-    <div class="step">
-      <div class="step-title"><span class="num">1</span>Choose your photo</div>
-      <input type="file" id="file" accept="image/*" hidden>
-      <button class="btn" id="pick" type="button">🖼️ Choose a photo</button>
-      <div class="preview" id="preview"><img id="previewImg" alt="Your chosen photo"></div>
-    </div>
-
-    <div class="step">
-      <div class="step-title"><span class="num">2</span>Choose your screen</div>
-      <select id="device" aria-label="Your device"></select>
-      <div class="toggle" id="orient" role="group" aria-label="Orientation">
-        <button type="button" data-o="portrait" class="on">▯ Upright</button>
-        <button type="button" data-o="landscape">▭ Sideways</button>
+<main class="stage">
+  <div class="sheet" id="tool">
+    <!-- Step 1 -->
+    <section class="step" id="s1" aria-labelledby="s1h">
+      <h2 id="s1h"><span class="num" aria-hidden="true">1</span>Choose your photo</h2>
+      <input type="file" id="file" accept="image/*" class="sr" tabindex="-1">
+      <button class="photo-drop" id="pick" type="button">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-4.5 4a2 2 0 110 4 2 2 0 010-4zM5 18l3.5-4.5 2.5 3 3.5-4.5L19 18H5z"/></svg></span>
+        <span><strong>Choose a photo</strong><span>From your gallery or files</span></span>
+      </button>
+      <div class="picked" id="picked">
+        <img id="previewImg" alt="Your chosen photo">
+        <div><b>Photo ready</b><div class="hint" style="margin:0" id="photoInfo"></div></div>
+        <button class="linkbtn" id="change" type="button">Change</button>
       </div>
-      <div id="custom">
+    </section>
+
+    <!-- Step 2 -->
+    <section class="step" id="s2" aria-labelledby="s2h">
+      <h2 id="s2h"><span class="num" aria-hidden="true">2</span>Choose your screen</h2>
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3a7 7 0 015.6 11.2l4.6 4.6-1.4 1.4-4.6-4.6A7 7 0 1110 3zm0 2a5 5 0 100 10 5 5 0 000-10z"/></svg>
+        <label class="sr" for="q">Search for your phone, tablet or screen</label>
+        <input id="q" type="search" placeholder="Type your phone, e.g. iPhone 15" autocomplete="off">
+      </div>
+      <div class="results" id="results" role="listbox" aria-label="Matching devices"></div>
+      <div class="cats" id="cats" role="group" aria-label="Device types"></div>
+      <div class="models" id="models" role="group" aria-label="Models"></div>
+      <div class="manual" id="manual">
         <div class="row">
-          <div><label class="small" for="cw">Width (pixels)</label><input type="number" id="cw" inputmode="numeric" min="200" max="8000" placeholder="1080"></div>
-          <div><label class="small" for="ch">Height (pixels)</label><input type="number" id="ch" inputmode="numeric" min="200" max="8000" placeholder="2400"></div>
+          <div><label for="cw">Width in pixels</label><input type="number" id="cw" inputmode="numeric" min="200" max="8000" placeholder="1080"></div>
+          <div><label for="ch">Height in pixels</label><input type="number" id="ch" inputmode="numeric" min="200" max="8000" placeholder="2400"></div>
         </div>
       </div>
-      <p class="hint" id="sizeHint"></p>
-    </div>
-
-    <div class="step">
-      <div class="step-title"><span class="num">3</span>Make your wallpaper</div>
-      <div class="toggle" id="quality" role="group" aria-label="Quality" style="margin:0 0 12px">
-        <button type="button" data-q="standard" class="on">HD<br><small>uses 1</small></button>
-        <button type="button" data-q="ultra">Ultra 4K<br><small>uses 3</small></button>
+      <div class="seg" id="orient" role="group" aria-label="Orientation">
+        <button type="button" data-o="portrait" aria-pressed="true">Upright</button>
+        <button type="button" data-o="landscape" aria-pressed="false">Sideways</button>
       </div>
-      <button class="btn" id="go" type="button" disabled>✨ Make my wallpaper</button>
-      <div class="error" id="error" role="alert"></div>
+      <div class="chosen" id="chosen" aria-live="polite">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 1H8a3 3 0 00-3 3v16a3 3 0 003 3h8a3 3 0 003-3V4a3 3 0 00-3-3zm-4 20a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5-5H7V5h10v11z"/></svg></span>
+        <div><b id="chosenName">This device</b><span id="chosenSize"></span></div>
+        <button class="linkbtn" id="useAuto" type="button" style="margin-left:auto" hidden>Use mine</button>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="step" id="s3" aria-labelledby="s3h">
+      <h2 id="s3h"><span class="num" aria-hidden="true">3</span>Make your wallpaper</h2>
+      <div class="seg" id="quality" role="group" aria-label="Quality" style="margin:0 0 14px">
+        <button type="button" data-q="standard" aria-pressed="true"><span>HD<small>uses 1</small></span></button>
+        <button type="button" data-q="ultra" aria-pressed="false"><span>Ultra 4K<small>uses 3</small></span></button>
+      </div>
+      <button class="btn" id="go" type="button" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8zM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9zM5 15l.7 1.6L7.3 17l-1.6.7L5 19.3l-.7-1.6L2.7 17l1.6-.4z"/></svg>
+        Make my wallpaper
+      </button>
+
+      <div class="error" id="error" role="alert"><img src="/brand/pawlo-confused.webp" alt="" width="64" height="64"><span id="errorText"></span></div>
 
       <div class="panel" id="signin">
-        <h3>Sign in to continue</h3>
-        <p>Sign in with Google to get <b>2 free wallpapers</b>. No password needed.</p>
+        <img class="pose" src="/brand/pawlo-pointing.webp" alt="" width="120" height="120">
+        <h3>Sign in to start</h3>
+        <p>Use your Google account. Your first 2 wallpapers are free.</p>
         <div id="gbtn"></div>
       </div>
 
       <div class="panel" id="buy">
-        <h3 id="buyTitle">Get more wallpapers</h3>
-        <p>Pay once. They never expire.</p>
+        <img class="pose" src="/brand/pawlo-sleeping.webp" alt="" width="120" height="120">
+        <h3 id="buyTitle">You've used your free wallpapers</h3>
+        <p>Pick a pack. You pay once and they never expire.</p>
         <div class="packs" id="packs"></div>
-        <p class="hint">Secure payment by card. Your wallpapers appear here right after paying.</p>
+        <p class="hint">Card or PayPal, handled securely by Lemon Squeezy. Your wallpapers appear here right after paying.</p>
       </div>
-      <div id="status" aria-live="polite">
-        <div class="spinner"></div>
-        <strong>Working on your photo…</strong><br>
-        <span class="hint">This usually takes about 1 minute. Please keep this page open.</span>
+
+      <div id="working" aria-live="polite">
+        <img src="/brand/pawlo-painting.webp" alt="Pawlo painting your wallpaper" width="200" height="200">
+        <ul class="checklist" id="checklist">
+          <li>Reading your photo</li>
+          <li>Fitting it to your screen</li>
+          <li>Sharpening the details</li>
+          <li>Finishing up</li>
+        </ul>
+        <div class="tip" id="tip"></div>
       </div>
+
       <div id="result">
-        <p class="done">✅ Your wallpaper is ready!</p>
-        <img id="resultImg" alt="Your new wallpaper">
-        <button class="btn" id="save" type="button">⬇️ Save to my photos</button>
-        <button class="btn light" id="again" type="button">Make another one</button>
-        <p class="hint" id="saveHint">Tip: if saving doesn't start, press and hold the picture, then choose "Save".</p>
+        <div class="ready">
+          <img src="/brand/pawlo-jumping.webp" alt="" width="92" height="92" id="jumpPawlo">
+          <div><h3>Your wallpaper is ready</h3><p id="resultSize"></p></div>
+        </div>
+        <div class="device" id="device">
+          <img class="layer" id="afterImg" alt="Your new wallpaper">
+          <img class="layer before" id="beforeImg" alt="Your original photo, as your phone would show it" hidden>
+          <div class="split" id="split" hidden></div>
+          <div class="island"></div>
+          <div class="lock" id="lock"><div class="date" id="lockDate"></div><div class="time" id="lockTime"></div></div>
+        </div>
+        <div class="cmp" id="cmp">
+          <label class="sr" for="slider">Compare before and after</label>
+          <input type="range" id="slider" min="0" max="100" value="50">
+          <div class="labels"><span>Before</span><span>After</span></div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="save" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v9.6l3.3-3.3 1.4 1.4L12 16.4l-5.7-5.7 1.4-1.4 3.3 3.3V3zM5 18h14v2H5z"/></svg>
+            Save to my photos
+          </button>
+          <div class="two">
+            <button class="btn ghost" id="compareBtn" type="button">Compare</button>
+            <button class="btn ghost" id="again" type="button">Start over</button>
+          </div>
+          <p class="hint" style="text-align:center">If saving doesn't start, press and hold the picture, then choose Save.</p>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 
-  <section class="info">
-    <h2>Why does my photo look blurry as a wallpaper?</h2>
-    <p>Phones zoom in and crop any photo that isn't the same shape as the screen, and they stretch small photos to fill it. Both make pictures blurry. Fit My Wallpaper rebuilds your photo at your screen's exact size, keeping the same framing, so it looks sharp, in HD or 4K.</p>
-
-    <details><summary>Why does my photo quality drop when I set it as my wallpaper?</summary>
-      <p>Your phone screen is tall and narrow. When a photo has a different shape, the phone zooms in to fill the screen, which throws away pixels and makes the picture soft. We fix the shape first, so no zooming is needed.</p></details>
-    <details><summary>How do I make a picture fit my phone without cropping or stretching?</summary>
-      <p>Choose your photo, pick your phone (we try to detect it for you), and tap "Make my wallpaper". The result matches your screen's exact pixel size.</p></details>
-    <details><summary>Can I turn a portrait photo into a landscape wallpaper?</summary>
-      <p>Yes. Pick a computer or TV, or choose "Sideways" for a tablet. Your photo keeps its framing; only the missing edges are filled in to match.</p></details>
-    <details><summary>Can a low quality photo become HD or 4K?</summary>
-      <p>Yes. Every wallpaper is rebuilt at high resolution, up to 4K, then sized exactly for your device.</p></details>
-    <details><summary>Is it free?</summary>
-      <p>Your first 2 wallpapers are free. After that you can buy a pack: 10 for $2.99, 30 for $6.99 or 100 for $19.99. You pay once and they never expire.</p></details>
-    <details><summary>Do you keep my photos?</summary>
-      <p>No. Your photo is used only to make your wallpaper and is not stored on our site.</p></details>
-  </section>
+  <aside class="guide" aria-live="polite">
+    <div class="bubble" id="bubble">Hi, I'm Pawlo! Pick a photo and I'll make it fit your screen.</div>
+    <img id="guideImg" src="/brand/pawlo-pointing.webp" alt="Pawlo the dog" width="320" height="320">
+  </aside>
 </main>
 
-<footer>Fit My Wallpaper · Use photos you own or have permission to use. · <a href="/privacy.html" style="color:inherit">Privacy</a> · <a href="/terms.html" style="color:inherit">Terms</a> · <a href="/refund.html" style="color:inherit">Refunds</a> · <a href="mailto:omarmohfuture@gmail.com" style="color:inherit">Contact</a></footer>
+<section class="section" id="pricing" aria-labelledby="ph">
+  <div class="pricing">
+    <div>
+      <h2 id="ph">Simple prices</h2>
+      <p>Start with 2 free wallpapers. After that, pay once for a pack. They never expire.</p>
+      <ul class="price-list">
+        <li><div class="what"><b>First 2 wallpapers</b><span>When you sign in</span></div><span class="amt">Free</span></li>
+        <li><div class="what"><b>10 wallpapers</b><span>$0.30 each</span></div><span class="amt">$2.99</span></li>
+        <li class="best"><div class="what"><b>30 wallpapers <span class="tag">Most popular</span></b><span>$0.23 each</span></div><span class="amt">$6.99</span></li>
+        <li><div class="what"><b>100 wallpapers</b><span>$0.20 each</span></div><span class="amt">$19.99</span></li>
+      </ul>
+      <p class="hint">HD uses 1 from your pack. Ultra 4K uses 3. If a wallpaper fails, it's returned to you automatically.</p>
+    </div>
+    <div class="price-side" aria-hidden="true">
+      <img src="/brand/pawlo-phone.webp" alt="" width="300" height="300" loading="lazy">
+      <p>Fits iPhone, Samsung, iPad, computers and TVs.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section faq" aria-labelledby="fh">
+  <h2 id="fh">Why does my photo look blurry as a wallpaper?</h2>
+  <p>Phones zoom in and crop any photo that isn't the same shape as the screen, and they stretch small photos to fill it. Both make pictures blurry. Pawlo rebuilds your photo at your screen's exact size, keeping the same framing, so it stays sharp.</p>
+  <details><summary>Why does my photo quality drop when I set it as my wallpaper?</summary>
+    <p>Your phone screen is tall and narrow. When a photo has a different shape, the phone zooms in to fill the screen, which throws away pixels and makes the picture soft. Pawlo fixes the shape first, so no zooming is needed.</p></details>
+  <details><summary>How do I make a picture fit my phone without cropping or stretching?</summary>
+    <p>Choose your photo, pick your phone (Pawlo detects it for you), and tap Make my wallpaper. The result matches your screen's exact pixel size.</p></details>
+  <details><summary>Can I turn a portrait photo into a landscape wallpaper?</summary>
+    <p>Yes. Pick a computer or TV, or choose Sideways. Your photo keeps its framing; only the missing edges are filled in.</p></details>
+  <details><summary>Can a low quality photo become HD or 4K?</summary>
+    <p>Yes. Every wallpaper is rebuilt at high resolution, up to 4K, then sized exactly for your device.</p></details>
+  <details><summary>Is it free?</summary>
+    <p>Your first 2 wallpapers are free. After that you can buy a pack: 10 for $2.99, 30 for $6.99 or 100 for $19.99. You pay once and they never expire.</p></details>
+  <details><summary>Do you keep my photos?</summary>
+    <p>No. Your photo is used only to make your wallpaper and is not stored by Pawlo.</p></details>
+</section>
+
+<footer>
+  <img src="/brand/pawlo-lockup.webp" alt="Pawlo – fit my wallpaper" width="104" height="40" loading="lazy">
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="/refund.html">Refunds</a>
+  <a href="mailto:omarmohfuture@gmail.com">Contact</a>
+  <span>Use photos you own or have permission to use.</span>
+</footer>
 
 <script>
-// Screen sizes in pixels, upright (portrait) orientation.
-const DEVICES = [
-  ["📱 My device (auto-detect)", "auto"],
-  ["— iPhone —"],
-  ["iPhone 17 Pro Max / 16 Pro Max", 1320, 2868],
-  ["iPhone 17 Pro / 17 / 16 Pro", 1206, 2622],
-  ["iPhone Air", 1260, 2736],
-  ["iPhone 16 / 15 / 15 Pro", 1179, 2556],
-  ["iPhone 16 Plus / 15 Plus / 15 Pro Max", 1290, 2796],
-  ["iPhone 14 / 13 / 12", 1170, 2532],
-  ["iPhone 11 / XR", 828, 1792],
-  ["iPhone SE / 8", 750, 1334],
-  ["— Samsung —"],
-  ["Galaxy S25 Ultra / S24 Ultra", 1440, 3120],
-  ["Galaxy S25 / S24 / S23", 1080, 2340],
-  ["Galaxy A56 / A55 / A35 / A15", 1080, 2340],
-  ["Galaxy A06 / A05 (budget)", 720, 1600],
-  ["Galaxy Z Fold (inner screen)", 1968, 2184],
-  ["— Other phones —"],
-  ["Google Pixel 10 Pro / 9 Pro", 1280, 2856],
-  ["Google Pixel 10 / 9", 1080, 2424],
-  ["Xiaomi / Redmi / Oppo / Realme (most)", 1080, 2400],
-  ["Tecno / Infinix / Honor (most)", 1080, 2460],
-  ["Budget Android (HD+)", 720, 1600],
-  ["— Tablets —"],
-  ["iPad Pro 13\"", 2064, 2752],
-  ["iPad Pro 11\"", 1668, 2420],
-  ["iPad Air 13\"", 2048, 2732],
-  ["iPad / iPad Air 11\"", 1640, 2360],
-  ["iPad mini", 1488, 2266],
-  ["Galaxy Tab S10 / S9", 1600, 2560],
-  ["Galaxy Tab A9+", 1200, 1920],
-  ["— Computers & TVs —"],
-  ["Laptop / monitor – Full HD (1920×1080)", 1920, 1080],
-  ["Monitor – 2K / QHD (2560×1440)", 2560, 1440],
-  ["Monitor / TV – 4K (3840×2160)", 3840, 2160],
-  ["MacBook Air 13\"", 2560, 1664],
-  ["MacBook Pro 14\"", 3024, 1964],
-  ["Ultrawide monitor", 3440, 1440],
-  ["— —"],
-  ["✏️ Type my own size", "custom"],
-];
-
 const $ = (id) => document.getElementById(id);
-const sel = $("device");
-DEVICES.forEach((d, i) => {
-  const o = document.createElement("option");
-  o.textContent = d[0];
-  o.value = i;
-  if (d.length === 1) o.disabled = true;
-  sel.appendChild(o);
-});
+const ICON = {
+  apple: '<path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.9-.9-3.1-.8a4.6 4.6 0 00-3.9 2.4c-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 2.9 2.4s1.6-.8 3-.8 1.8.8 3.1.7 2-1.2 2.8-2.3a10 10 0 001.3-2.6 4 4 0 01-2.4-4.1zM14.1 5.8a4 4 0 00.9-2.9 4 4 0 00-2.6 1.4 3.8 3.8 0 00-1 2.8 3.4 3.4 0 002.7-1.3z"/>',
+  phone: '<path d="M16 1H8a3 3 0 00-3 3v16a3 3 0 003 3h8a3 3 0 003-3V4a3 3 0 00-3-3zm-4 20a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5-5H7V5h10v11z"/>',
+  android: '<path d="M7 9h10v8a2 2 0 01-2 2h-1v3h-2v-3h-1v3H9v-3H8a2 2 0 01-1-2V9zm-3 0h1.8v7H4V9zm14.2 0H20v7h-1.8V9zM8.3 4.2L7.2 2.4l.9-.5 1.1 1.9a6 6 0 015.6 0l1.1-1.9.9.5-1.1 1.8A5.4 5.4 0 0117.4 8H6.6a5.4 5.4 0 011.7-3.8zM10 6a.8.8 0 100-1.6.8.8 0 000 1.6zm4 0a.8.8 0 100-1.6.8.8 0 000 1.6z"/>',
+  tablet: '<path d="M18 1H6a3 3 0 00-3 3v16a3 3 0 003 3h12a3 3 0 003-3V4a3 3 0 00-3-3zm-6 21a1 1 0 110-2 1 1 0 010 2zm7-4H5V4h14v14z"/>',
+  laptop: '<path d="M4 5a2 2 0 012-2h12a2 2 0 012 2v10H4V5zm2 0v8h12V5H6zM1 17h22v1a2 2 0 01-2 2H3a2 2 0 01-2-2v-1z"/>',
+  ruler: '<path d="M3 17.6L17.6 3 21 6.4 6.4 21 3 17.6zm4.2-.9l1.4 1.4 1-1-1.4-1.4-1 1zm2.9-2.9l2.1 2.1 1-1-2.1-2.1-1 1zm2.8-2.8l1.4 1.4 1-1-1.4-1.4-1 1zm2.9-2.9l2.1 2.1 1-1-2.1-2.1-1 1z"/>',
+  auto: '<path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4zM19 15l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>',
+};
+const svg = (k) => `<svg viewBox="0 0 24 24">${ICON[k]}</svg>`;
 
-let orient = "portrait";
-let photoDataUrl = null;
-let resultBlob = null;
+// Screen sizes in pixels, upright.
+const GROUPS = [
+  { id: "iphone", label: "iPhone", icon: "apple", models: [
+    ["iPhone 17 Pro Max", 1320, 2868], ["iPhone 17 Pro", 1206, 2622], ["iPhone 17", 1206, 2622], ["iPhone Air", 1260, 2736],
+    ["iPhone 16 Pro Max", 1320, 2868], ["iPhone 16 Pro", 1206, 2622], ["iPhone 16 Plus", 1290, 2796], ["iPhone 16", 1179, 2556], ["iPhone 16e", 1170, 2532],
+    ["iPhone 15 Pro Max", 1290, 2796], ["iPhone 15 Pro", 1179, 2556], ["iPhone 15 Plus", 1290, 2796], ["iPhone 15", 1179, 2556],
+    ["iPhone 14 Pro Max", 1290, 2796], ["iPhone 14 Pro", 1179, 2556], ["iPhone 14 / 13 / 12", 1170, 2532], ["iPhone 13 mini / 12 mini", 1080, 2340],
+    ["iPhone 11 / XR", 828, 1792], ["iPhone 11 Pro / XS / X", 1125, 2436], ["iPhone SE / 8", 750, 1334]] },
+  { id: "samsung", label: "Samsung", icon: "android", models: [
+    ["Galaxy S25 Ultra", 1440, 3120], ["Galaxy S25+", 1440, 3120], ["Galaxy S25", 1080, 2340], ["Galaxy S24 Ultra", 1440, 3120], ["Galaxy S24", 1080, 2340],
+    ["Galaxy S23", 1080, 2340], ["Galaxy A56 / A55", 1080, 2340], ["Galaxy A36 / A35", 1080, 2340], ["Galaxy A26 / A16 / A15", 1080, 2340],
+    ["Galaxy A06 / A05", 720, 1600], ["Galaxy Z Fold (inside)", 1968, 2184], ["Galaxy Z Flip", 1080, 2640]] },
+  { id: "android", label: "Other phones", icon: "phone", models: [
+    ["Google Pixel 10 Pro / 9 Pro", 1280, 2856], ["Google Pixel 10 / 9", 1080, 2424], ["Xiaomi / Redmi (most)", 1080, 2400], ["Oppo / Realme (most)", 1080, 2400],
+    ["Honor (most)", 1080, 2412], ["Tecno / Infinix (most)", 1080, 2460], ["OnePlus 13", 1440, 3168], ["Budget Android (HD+)", 720, 1600]] },
+  { id: "tablet", label: "iPad & tablets", icon: "tablet", models: [
+    ["iPad Pro 13-inch", 2064, 2752], ["iPad Pro 11-inch", 1668, 2420], ["iPad Air 13-inch", 2048, 2732], ["iPad Air 11-inch", 1640, 2360],
+    ["iPad (A16 / 10th gen)", 1640, 2360], ["iPad mini", 1488, 2266], ["Galaxy Tab S10 / S9", 1600, 2560], ["Galaxy Tab A9+", 1200, 1920]] },
+  { id: "computer", label: "Computer & TV", icon: "laptop", models: [
+    ["Full HD screen", 1920, 1080], ["2K / QHD screen", 2560, 1440], ["4K screen or TV", 3840, 2160], ["MacBook Air 13-inch", 2560, 1664],
+    ["MacBook Air 15-inch", 2880, 1864], ["MacBook Pro 14-inch", 3024, 1964], ["MacBook Pro 16-inch", 3456, 2234], ["iMac 24-inch", 4480, 2520], ["Ultrawide monitor", 3440, 1440]] },
+  { id: "custom", label: "My own size", icon: "ruler" },
+];
+const ALL = GROUPS.flatMap((g) => (g.models || []).map((m) => ({ g: g.id, name: m[0], w: m[1], h: m[2] })));
 
+let orient = "portrait", quality = "standard", photoDataUrl = null, resultBlob = null;
+let pick = { g: "auto" };   // {g, name, w, h}
+const COST = { standard: 1, ultra: 3 };
+const PRICES = { 10: "$2.99", 30: "$6.99", 100: "$19.99" };
+let me = null, cfg = { googleClientId: "", packs: [] }, pendingMake = false;
+const DEMO = new URLSearchParams(location.search).get("demo");
+
+const store = {
+  get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
+  del(k) { try { sessionStorage.removeItem(k); } catch {} },
+};
+
+// ---------- Pawlo the guide ----------
+const POSES = { pointing: "pawlo-pointing", painting: "pawlo-painting", phone: "pawlo-phone", jumping: "pawlo-jumping", confused: "pawlo-confused", sleeping: "pawlo-sleeping" };
+function say(text, pose = "pointing") {
+  const b = $("bubble"), img = $("guideImg");
+  if (b.textContent !== text) { b.textContent = text; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
+  const src = `/brand/${POSES[pose]}.webp`;
+  if (!img.src.endsWith(src)) img.src = src;
+}
+function guideForState() {
+  if (!photoDataUrl) return say("Hi, I'm Pawlo! Pick a photo and I'll make it fit your screen.");
+  const [w, h] = currentSize();
+  if (!(w >= 200 && h >= 200)) return say("Type your screen's width and height so I know the size.");
+  say("Lovely photo! Check the screen is right, then tap Make my wallpaper.");
+}
+
+// ---------- device picker ----------
 function autoSize() {
   const dpr = window.devicePixelRatio || 1;
   let w = Math.round(screen.width * dpr), h = Math.round(screen.height * dpr);
-  // Desktop browsers: keep native landscape. Mobiles: upright.
   const mobile = matchMedia("(pointer:coarse)").matches;
   if (mobile && w > h) [w, h] = [h, w];
   return [w, h, mobile];
 }
-
 function currentSize() {
-  const d = DEVICES[sel.value];
-  if (d[1] === "custom") {
-    return [Number($("cw").value), Number($("ch").value)];
-  }
-  let w, h;
-  if (d[1] === "auto") {
-    const [aw, ah, mobile] = autoSize();
-    w = aw; h = ah;
-    if (!mobile) return [w, h];
-  } else { w = d[1]; h = d[2]; }
-  const isLandscapeNative = w > h;
-  if (isLandscapeNative) return [w, h];        // computers/TVs are always landscape
+  if (pick.g === "custom") return [Number($("cw").value), Number($("ch").value)];
+  let w, h, fixed = false;
+  if (pick.g === "auto") { const [aw, ah, mobile] = autoSize(); w = aw; h = ah; fixed = !mobile; }
+  else { w = pick.w; h = pick.h; }
+  if (fixed || w > h) return [w, h];          // computers & TVs are always landscape
   return orient === "landscape" ? [h, w] : [w, h];
 }
+function renderCats() {
+  $("cats").innerHTML = "";
+  GROUPS.forEach((g) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "cat"; b.dataset.g = g.id;
+    b.setAttribute("aria-pressed", String(pick.g === g.id || (g.models && pick.g === g.id)));
+    b.innerHTML = `<span class="ico" aria-hidden="true">${svg(g.icon)}</span>${g.label}`;
+    b.addEventListener("click", () => openGroup(g.id));
+    $("cats").appendChild(b);
+  });
+}
+let openG = null;
+function openGroup(id) {
+  const g = GROUPS.find((x) => x.id === id);
+  openG = id;
+  [...$("cats").children].forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.g === id)));
+  $("manual").classList.toggle("open", id === "custom");
+  if (id === "custom") { pick = { g: id }; $("models").classList.remove("open"); refreshUI(); if (id === "custom") $("cw").focus(); return; }
+  const box = $("models"); box.innerHTML = ""; box.classList.add("open");
+  g.models.forEach(([name, w, h]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "model"; b.textContent = name;
+    b.setAttribute("aria-pressed", String(pick.name === name));
+    b.addEventListener("click", () => choose({ g: id, name, w, h }));
+    box.appendChild(b);
+  });
+}
+function choose(p) {
+  pick = p;
+  $("q").value = ""; $("results").style.display = "none";
+  $("manual").classList.remove("open");
+  [...$("cats").children].forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.g === p.g)));
+  if (openG !== p.g) openGroup(p.g);
+  [...$("models").children].forEach((m) => m.setAttribute("aria-pressed", String(m.textContent === p.name)));
+  refreshUI();
+}
+$("q").addEventListener("input", () => {
+  const q = $("q").value.trim().toLowerCase();
+  const box = $("results");
+  if (q.length < 2) { box.style.display = "none"; return; }
+  const words = q.split(/\s+/);
+  const hits = ALL.filter((d) => words.every((w) => (d.name + " " + d.g).toLowerCase().includes(w))).slice(0, 7);
+  box.innerHTML = hits.length ? "" : '<button type="button" disabled>No match. Try the buttons below, or "My own size".</button>';
+  hits.forEach((d) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.setAttribute("role", "option");
+    b.innerHTML = `<span>${d.name}</span><small>${d.w} × ${d.h}</small>`;
+    b.addEventListener("click", () => choose(d));
+    box.appendChild(b);
+  });
+  box.style.display = "block";
+});
+$("cw").addEventListener("input", refreshUI);
+$("useAuto").addEventListener("click", () => { pick = { g: "auto" }; openG = null; $("models").classList.remove("open"); $("manual").classList.remove("open"); [...$("cats").children].forEach((c) => c.setAttribute("aria-pressed", "false")); refreshUI(); });
+$("ch").addEventListener("input", refreshUI);
+function segToggle(groupId, attr, cb) {
+  $(groupId).addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    [...$(groupId).children].forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    cb(b.dataset[attr]);
+  });
+}
+segToggle("orient", "o", (v) => { orient = v; refreshUI(); });
+segToggle("quality", "q", (v) => { quality = v; });
 
 function refreshUI() {
-  const d = DEVICES[sel.value];
-  const custom = d[1] === "custom";
-  $("custom").style.display = custom ? "block" : "none";
-  const desktopAuto = d[1] === "auto" && !autoSize()[2];
-  const fixedLandscape = desktopAuto || (typeof d[1] === "number" && d[1] > d[2]);
-  $("orient").style.display = custom || fixedLandscape ? "none" : "flex";
   const [w, h] = currentSize();
-  $("sizeHint").textContent = w >= 200 && h >= 200 ? `Your wallpaper will be ${w} × ${h} pixels.` : "Type a width and height (at least 200).";
-  $("go").disabled = !photoDataUrl || !(w >= 200 && h >= 200);
+  const ok = w >= 200 && h >= 200;
+  const landscapeFixed = (pick.g === "auto" && !autoSize()[2]) || (pick.w && pick.w > pick.h);
+  $("orient").style.display = landscapeFixed ? "none" : "flex";
+  $("useAuto").hidden = pick.g === "auto";
+  $("chosenName").textContent = pick.g === "auto" ? "This device" : pick.g === "custom" ? "My own size" : pick.name;
+  $("chosenSize").textContent = ok ? `${w} × ${h} pixels` : "Enter a width and height (at least 200)";
+  $("go").disabled = !photoDataUrl || !ok;
+  $("s1").classList.toggle("done", !!photoDataUrl);
+  $("s2").classList.toggle("done", ok);
+  if (!$("working").classList.contains("open") && !$("result").classList.contains("open")) guideForState();
 }
 
-sel.addEventListener("change", refreshUI);
-$("cw").addEventListener("input", refreshUI);
-$("ch").addEventListener("input", refreshUI);
-$("orient").addEventListener("click", (e) => {
-  const b = e.target.closest("button"); if (!b) return;
-  orient = b.dataset.o;
-  [...$("orient").children].forEach((x) => x.classList.toggle("on", x === b));
-  refreshUI();
-});
-
-// Opens the phone's photo picker (recent photos first on iPhone and Android).
+// ---------- photo ----------
 $("pick").addEventListener("click", () => $("file").click());
+$("change").addEventListener("click", () => $("file").click());
 $("file").addEventListener("change", async () => {
   const f = $("file").files[0];
   if (!f) return;
   hideError();
-  try {
-    photoDataUrl = await shrink(f, 2048);
-    $("previewImg").src = photoDataUrl;
-    $("preview").style.display = "block";
-    $("pick").textContent = "🖼️ Choose a different photo";
-    $("pick").classList.add("light");
-  } catch {
-    showError("That file couldn't be opened. Please choose a photo (JPG, PNG or HEIC).");
-  }
-  refreshUI();
+  try { setPhoto(await shrink(f, 2048)); }
+  catch { showError("That file couldn't be opened. Choose a JPG, PNG or HEIC photo."); }
 });
-
-// Resize big photos before upload (keeps it fast and under the server's size limit).
+function setPhoto(dataUrl) {
+  photoDataUrl = dataUrl;
+  $("previewImg").src = dataUrl;
+  const i = new Image();
+  i.onload = () => { $("photoInfo").textContent = `${i.naturalWidth} × ${i.naturalHeight} pixels`; };
+  i.src = dataUrl;
+  $("pick").style.display = "none";
+  $("picked").style.display = "flex";
+  refreshUI();
+}
 function shrink(file, maxEdge) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -350,8 +683,7 @@ function shrink(file, maxEdge) {
     img.onload = () => {
       const s = Math.min(1, maxEdge / Math.max(img.naturalWidth, img.naturalHeight));
       const c = document.createElement("canvas");
-      c.width = Math.round(img.naturalWidth * s);
-      c.height = Math.round(img.naturalHeight * s);
+      c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url);
       resolve(c.toDataURL("image/jpeg", 0.92));
@@ -361,59 +693,53 @@ function shrink(file, maxEdge) {
   });
 }
 
-// ---------- Account, free wallpapers and packs ----------
-const PRICES = { 10: "$2.99", 30: "$6.99", 100: "$19.99" };
-const COST = { standard: 1, ultra: 3 };
-let me = null, cfg = { googleClientId: "", packs: [] }, quality = "standard", pendingMake = false;
-
-const store = {
-  get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
-  set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
-  del(k) { try { sessionStorage.removeItem(k); } catch {} },
-};
-
+// ---------- account & packs ----------
 async function loadMe() {
-  try {
-    const r = await fetch("/api/me", { cache: "no-store" });
-    const d = await r.json();
-    me = d.user; cfg = d;
-  } catch { me = null; }
+  if (DEMO) { cfg = { googleClientId: "", packs: [10, 30, 100] }; renderAccount(); return me; }
+  try { const d = await (await fetch("/api/me", { cache: "no-store" })).json(); me = d.user; cfg = d; }
+  catch { me = null; }
   renderAccount();
   return me;
 }
-
 function renderAccount() {
+  const a = $("acct");
   if (me) {
-    const n = me.credits;
-    $("accountText").innerHTML = `Hi${me.name ? " " + esc(me.name) : ""}! You have <b>${n} wallpaper${n === 1 ? "" : "s"}</b> left`;
-    $("logout").hidden = false; $("buyLink").hidden = false;
-    $("signin").style.display = "none";
-  } else {
-    $("accountText").textContent = "🎁 Your first 2 wallpapers are free";
-    $("logout").hidden = true; $("buyLink").hidden = true;
-  }
+    a.hidden = false;
+    a.innerHTML = `<span><b>${me.credits}</b> left</span>`;
+    a.title = `Signed in${me.email ? " as " + me.email : ""}. Tap for options.`;
+    $("signin").classList.remove("open");
+  } else a.hidden = true;
   renderPacks();
 }
-const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
+$("acct").addEventListener("click", () => {
+  const open = !$("acctMenu").classList.contains("open");
+  $("acctMenu").classList.toggle("open", open); $("acct").setAttribute("aria-expanded", String(open));
+  $("acctEmail").textContent = me && me.email ? me.email : "";
+});
+document.addEventListener("click", (e) => { if (!$("acctBox").contains(e.target)) $("acctMenu").classList.remove("open"); });
+$("acctBuy").addEventListener("click", () => { $("acctMenu").classList.remove("open"); showBuy("Get more wallpapers"); });
+$("acctOut").addEventListener("click", () => {
+  $("acctMenu").classList.remove("open");
+  fetch("/api/me", { method: "POST" }).catch(() => {});
+  try { google.accounts.id.disableAutoSelect(); } catch {}
+  me = null; renderAccount(); guideForState();
+});
 function renderPacks() {
-  const box = $("packs");
-  box.innerHTML = "";
+  const box = $("packs"); box.innerHTML = "";
   const avail = cfg.packs || [];
   if (!avail.length) { box.innerHTML = '<p class="hint">Packs are coming soon.</p>'; return; }
   avail.forEach((n) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "pack" + (n === 30 ? " best" : "");
     const each = (parseFloat(PRICES[n].slice(1)) / n).toFixed(2);
-    b.innerHTML = `<span><span class="n">${n} wallpapers${n === 30 ? '<span class="tag">Most popular</span>' : ""}</span>
-      <span class="each">$${each} each</span></span><span class="price">${PRICES[n]}</span>`;
+    b.innerHTML = `<span class="what"><b>${n} wallpapers${n === 30 ? ' <span class="tag">Most popular</span>' : ""}</b><span>$${each} each</span></span><span class="amt">${PRICES[n]}</span>`;
     b.addEventListener("click", () => buy(n));
     box.appendChild(b);
   });
 }
-
 async function buy(n) {
   hideError();
+  if (DEMO) return showError("This is a preview. Buying works on the live site.");
   try {
     const r = await fetch("/api/checkout?pack=" + n);
     const d = await r.json();
@@ -423,44 +749,37 @@ async function buy(n) {
     location.href = d.url;
   } catch (e) { showError(e.message); }
 }
-
 function showBuy(title) {
+  closePanels();
   $("buyTitle").textContent = title || "Get more wallpapers";
-  $("buy").style.display = "block";
+  $("buy").classList.add("open");
+  say("I've used up your wallpapers. Pick a pack and I'll keep going.", "sleeping");
   $("buy").scrollIntoView({ behavior: "smooth", block: "center" });
 }
-$("buyLink").addEventListener("click", () => showBuy());
-
-$("logout").addEventListener("click", async () => {
-  await fetch("/api/me", { method: "POST" }).catch(() => {});
-  try { google.accounts.id.disableAutoSelect(); } catch {}
-  me = null; renderAccount();
-});
 
 // Google sign-in
 let gReady = null;
 function loadGoogle() {
   if (gReady) return gReady;
   gReady = new Promise((resolve, reject) => {
-    if (!cfg.googleClientId) return reject(new Error("Sign-in isn't set up yet."));
+    if (!cfg.googleClientId) return reject(new Error("Sign-in isn't available in this preview."));
     const sc = document.createElement("script");
     sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
-    sc.onload = () => {
-      google.accounts.id.initialize({ client_id: cfg.googleClientId, callback: onGoogle, ux_mode: "popup" });
-      resolve();
-    };
-    sc.onerror = () => reject(new Error("Couldn't load Google sign-in. Please try again."));
+    sc.onload = () => { google.accounts.id.initialize({ client_id: cfg.googleClientId, callback: onGoogle, ux_mode: "popup" }); resolve(); };
+    sc.onerror = () => reject(new Error("Google sign-in didn't load. Check your connection and try again."));
     document.head.appendChild(sc);
   });
   return gReady;
 }
 async function showSignIn() {
-  $("signin").style.display = "block";
+  closePanels();
+  $("signin").classList.add("open");
+  say("Sign in with Google and your first 2 wallpapers are on me.");
   $("signin").scrollIntoView({ behavior: "smooth", block: "center" });
   try {
     await loadGoogle();
     $("gbtn").innerHTML = "";
-    google.accounts.id.renderButton($("gbtn"), { theme: "filled_blue", size: "large", shape: "pill", text: "continue_with", width: 300 });
+    google.accounts.id.renderButton($("gbtn"), { theme: "outline", size: "large", shape: "pill", text: "continue_with", width: 280 });
   } catch (e) { showError(e.message); }
 }
 async function onGoogle(resp) {
@@ -468,122 +787,207 @@ async function onGoogle(resp) {
   try {
     const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential: resp.credential }) });
     const d = await r.json();
-    if (!r.ok) throw new Error(d.error || "Sign-in failed.");
+    if (!r.ok) throw new Error(d.error || "Sign-in didn't work. Try again.");
     me = { name: d.name, email: d.email, credits: d.credits };
     renderAccount();
-    if (pendingMake) { pendingMake = false; make(); }
+    if (pendingMake) { pendingMake = false; make(); } else guideForState();
   } catch (e) { showError(e.message); }
 }
 
-$("quality").addEventListener("click", (e) => {
-  const b = e.target.closest("button"); if (!b) return;
-  quality = b.dataset.q;
-  [...$("quality").children].forEach((x) => x.classList.toggle("on", x === b));
-});
-
+// ---------- make ----------
+const TIPS = [
+  "Tip: Ultra 4K is great for big tablets and TVs.",
+  "Pawlo keeps your framing. Nothing gets stretched.",
+  "Did you know? Phones zoom into photos that don't fit, which makes them blurry.",
+  "Almost there. Good things take a minute.",
+];
+let workTimer = null;
+function startWorking() {
+  closePanels();
+  $("go").style.display = "none"; $("quality").style.display = "none";
+  $("result").classList.remove("open");
+  $("working").classList.add("open");
+  say("Painting your wallpaper. This takes about a minute.", "painting");
+  const items = [...$("checklist").children];
+  items.forEach((li) => (li.className = ""));
+  const marks = [0, 4, 30, 50]; let t = 0, tip = 0;
+  $("tip").textContent = TIPS[0];
+  clearInterval(workTimer);
+  workTimer = setInterval(() => {
+    t++;
+    items.forEach((li, i) => { li.className = t >= (marks[i + 1] ?? 1e9) ? "ok" : t >= marks[i] ? "now" : ""; });
+    if (t % 8 === 0) $("tip").textContent = TIPS[++tip % TIPS.length];
+  }, 1000);
+  items[0].className = "now";
+  $("working").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function stopWorking() {
+  clearInterval(workTimer);
+  $("working").classList.remove("open");
+  $("go").style.display = "flex"; $("quality").style.display = "flex";
+}
 $("go").addEventListener("click", make);
-
 async function make() {
   const [w, h] = currentSize();
   hideError();
-  $("buy").style.display = "none";
-  if (!me) { pendingMake = true; return showSignIn(); }
-  if (me.credits < COST[quality]) {
-    return showBuy(me.credits ? `Ultra 4K uses 3 wallpapers. You have ${me.credits}.` : "You've used your free wallpapers");
-  }
-  $("go").style.display = "none";
-  $("result").style.display = "none";
-  $("status").style.display = "block";
+  if (!me && !DEMO) { pendingMake = true; return showSignIn(); }
+  if (me && me.credits < COST[quality]) return showBuy(me.credits ? `Ultra 4K uses 3. You have ${me.credits} left.` : "You've used your free wallpapers");
+  startWorking();
   try {
-    const r = await fetch("/api/convert", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: photoDataUrl, width: w, height: h, quality }),
-    });
-    const data = await r.json().catch(() => ({}));
-    if (data.needLogin) { me = null; renderAccount(); pendingMake = true; showSignIn(); throw null; }
-    if (data.needCredits) { await loadMe(); showBuy("You've used your free wallpapers"); throw null; }
-    if (!r.ok || !data.image) throw new Error(data.error || "Something went wrong. Please try again.");
+    let data;
+    if (DEMO) { await new Promise((r) => setTimeout(r, 2500)); data = { image: photoDataUrl, credits: 1 }; }
+    else {
+      const r = await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: photoDataUrl, width: w, height: h, quality }) });
+      data = await r.json().catch(() => ({}));
+      if (data.needLogin) { stopWorking(); me = null; renderAccount(); pendingMake = true; return showSignIn(); }
+      if (data.needCredits) { stopWorking(); await loadMe(); return showBuy("You've used your free wallpapers"); }
+      if (!r.ok || !data.image) throw new Error(data.error || "Something went wrong. Your wallpaper wasn't charged. Try again.");
+    }
     if (me && typeof data.credits === "number") { me.credits = data.credits; renderAccount(); }
     resultBlob = await fitExactly(data.image, w, h);
-    $("resultImg").src = URL.createObjectURL(resultBlob);
-    $("result").style.display = "block";
-    $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+    stopWorking();
+    showResult(w, h);
   } catch (e) {
-    if (e) showError(e.message || "Something went wrong. Please try again.");
-    $("go").style.display = "flex";
-  } finally {
-    $("status").style.display = "none";
+    stopWorking();
+    showError(e.message || "Something went wrong. Try again.");
   }
 }
-
-// Coming back from payment: restore the photo and wait for the wallpapers to arrive.
-async function afterPayment() {
-  const saved = store.get("fmw_photo");
-  if (saved) {
-    photoDataUrl = saved; store.del("fmw_photo");
-    $("previewImg").src = saved; $("preview").style.display = "block";
-    $("pick").textContent = "🖼️ Choose a different photo"; $("pick").classList.add("light");
-    refreshUI();
-  }
-  if (!new URLSearchParams(location.search).has("paid")) return;
-  history.replaceState(null, "", location.pathname);
-  const before = Number(store.get("fmw_credits_before") || 0);
-  store.del("fmw_credits_before");
-  $("accountText").textContent = "⏳ Adding your wallpapers…";
-  for (let i = 0; i < 20; i++) {
-    await new Promise((r) => setTimeout(r, 3000));
-    const u = await loadMe();
-    if (u && u.credits > before) { $("accountText").innerHTML = `✅ Thank you! You now have <b>${u.credits} wallpapers</b>`; return; }
-  }
-  renderAccount();
+function showResult(w, h) {
+  $("go").style.display = "none"; $("quality").style.display = "none";
+  const dev = $("device");
+  const land = w > h;
+  dev.classList.toggle("land", land);
+  const maxW = land ? 560 : 280;
+  dev.style.width = `min(${maxW}px, 100%)`;
+  dev.style.aspectRatio = `${w} / ${h}`;
+  $("afterImg").src = URL.createObjectURL(resultBlob);
+  $("beforeImg").src = photoDataUrl;
+  setCompare(false);
+  const now = new Date();
+  $("lockTime").textContent = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(/\s?[AP]M/i, "");
+  $("lockDate").textContent = now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+  $("resultSize").textContent = `${w} × ${h} pixels, exactly your screen.`;
+  $("result").classList.add("open");
+  const j = $("jumpPawlo"); j.classList.remove("pop"); void j.offsetWidth; j.classList.add("pop");
+  say("Done! Save it, then set it as your wallpaper.", "phone");
+  $("result").scrollIntoView({ behavior: "smooth", block: "start" });
 }
-
-// Scale the AI result to the device's exact pixels (no stretching: center-fill).
+function setCompare(on) {
+  $("cmp").classList.toggle("on", on);
+  $("beforeImg").hidden = !on; $("split").hidden = !on;
+  $("compareBtn").textContent = on ? "Hide compare" : "Compare";
+  $("lock").style.display = on ? "none" : "";
+  if (on) { $("slider").value = 50; moveSplit(50); }
+}
+function moveSplit(v) { $("beforeImg").style.clipPath = `inset(0 ${100 - v}% 0 0)`; $("split").style.left = v + "%"; }
+$("slider").addEventListener("input", (e) => moveSplit(e.target.value));
+$("compareBtn").addEventListener("click", () => setCompare(!$("cmp").classList.contains("on")));
+$("again").addEventListener("click", () => {
+  $("result").classList.remove("open");
+  $("go").style.display = "flex"; $("quality").style.display = "flex";
+  refreshUI();
+  $("tool").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 function fitExactly(src, w, h) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const c = document.createElement("canvas");
-      c.width = w; c.height = h;
-      const ctx = c.getContext("2d");
-      ctx.imageSmoothingQuality = "high";
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const ctx = c.getContext("2d"); ctx.imageSmoothingQuality = "high";
       const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
       const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
       ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
       c.toBlob((b) => (b ? resolve(b) : reject()), "image/jpeg", 0.95);
     };
-    img.onerror = reject;
-    img.src = src;
+    img.onerror = reject; img.src = src;
   });
 }
-
 $("save").addEventListener("click", async () => {
   if (!resultBlob) return;
   const [w, h] = currentSize();
-  const name = `wallpaper-${w}x${h}.jpg`;
+  const name = `pawlo-wallpaper-${w}x${h}.jpg`;
   const file = new File([resultBlob], name, { type: "image/jpeg" });
-  // On phones, the share sheet has "Save Image" – this puts it straight into Photos.
   if (navigator.canShare && navigator.canShare({ files: [file] }) && matchMedia("(pointer:coarse)").matches) {
     try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === "AbortError") return; }
   }
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(resultBlob);
-  a.download = name;
+  const a = document.createElement("a"); a.href = URL.createObjectURL(resultBlob); a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
 });
 
-$("again").addEventListener("click", () => {
-  $("result").style.display = "none";
-  $("go").style.display = "flex";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function closePanels() { $("signin").classList.remove("open"); $("buy").classList.remove("open"); }
+function showError(m) { $("errorText").textContent = m; $("error").classList.add("open"); say("Hmm, that didn't work. Here's what happened.", "confused"); }
+function hideError() { $("error").classList.remove("open"); }
+
+// ---------- after payment ----------
+async function afterPayment() {
+  const saved = store.get("fmw_photo");
+  if (saved) { store.del("fmw_photo"); setPhoto(saved); }
+  if (!new URLSearchParams(location.search).has("paid")) return;
+  history.replaceState(null, "", location.pathname);
+  const before = Number(store.get("fmw_credits_before") || 0);
+  store.del("fmw_credits_before");
+  say("Thank you! Adding your wallpapers now…", "jumping");
+  for (let i = 0; i < 20; i++) {
+    await new Promise((r) => setTimeout(r, 3000));
+    const u = await loadMe();
+    if (u && u.credits > before) { say(`All set! You now have ${u.credits} wallpapers.`, "jumping"); return; }
+  }
+  guideForState();
+}
+
+// ---------- language ----------
+const LANGS = [["en", "English"], ["ar", "العربية"], ["es", "Español"], ["fr", "Français"], ["de", "Deutsch"], ["pt", "Português"], ["tr", "Türkçe"], ["hi", "हिन्दी"], ["id", "Bahasa Indonesia"], ["ru", "Русский"], ["zh-CN", "中文"], ["ja", "日本語"]];
+$("langMenu").innerHTML = LANGS.map(([c, n]) => `<button type="button" role="menuitem" data-l="${c}" lang="${c}">${n}</button>`).join("") +
+  '<p class="hint" style="padding:0 12px 6px;margin:6px 0 0">More languages: use your browser\'s Translate option.</p>';
+$("langBtn").addEventListener("click", () => {
+  const open = !$("langMenu").classList.contains("open");
+  $("langMenu").classList.toggle("open", open);
+  $("langBtn").setAttribute("aria-expanded", String(open));
 });
+document.addEventListener("click", (e) => { if (!$("langBox").contains(e.target)) { $("langMenu").classList.remove("open"); $("langBtn").setAttribute("aria-expanded", "false"); } });
+$("langMenu").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-l]"); if (!b) return;
+  setLang(b.dataset.l);
+  $("langMenu").classList.remove("open");
+});
+function setLang(code) {
+  const host = location.hostname;
+  const val = code === "en" ? "" : `/en/${code}`;
+  const exp = code === "en" ? "Thu, 01 Jan 1970 00:00:00 GMT" : "";
+  [host, "." + host].forEach((d) => { document.cookie = `googtrans=${val};path=/;domain=${d}${exp ? ";expires=" + exp : ""}`; });
+  document.cookie = `googtrans=${val};path=/${exp ? ";expires=" + exp : ""}`;
+  document.documentElement.dir = code === "ar" ? "rtl" : "ltr";
+  location.reload();
+}
+(function loadTranslateIfNeeded() {
+  if (!/googtrans=\/en\/(?!en)/.test(document.cookie)) return;
+  window.googleTranslateElementInit = () => { try { new google.translate.TranslateElement({ pageLanguage: "en", autoDisplay: false }, "google_translate_element"); } catch {} };
+  const s = document.createElement("script");
+  s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"; s.async = true;
+  document.head.appendChild(s);
+  if (/googtrans=\/en\/ar/.test(document.cookie)) document.documentElement.dir = "rtl";
+})();
 
-function showError(m) { $("error").textContent = m; $("error").style.display = "block"; }
-function hideError() { $("error").style.display = "none"; }
-
+// ---------- start ----------
+renderCats();
 refreshUI();
 loadMe().then(afterPayment);
+
+// Preview-only states: ?demo=signin | buy | wait | result | error
+if (DEMO) (async () => {
+  const c = document.createElement("canvas"); c.width = 900; c.height = 1200;
+  const x = c.getContext("2d");
+  const g = x.createLinearGradient(0, 0, 0, 1200); g.addColorStop(0, "#F7B267"); g.addColorStop(.55, "#F4845F"); g.addColorStop(1, "#3D5A80");
+  x.fillStyle = g; x.fillRect(0, 0, 900, 1200);
+  x.fillStyle = "#FFE8A3"; x.beginPath(); x.arc(450, 520, 120, 0, 7); x.fill();
+  x.fillStyle = "#293241"; x.beginPath(); x.moveTo(0, 1200); x.lineTo(0, 820); x.lineTo(260, 640); x.lineTo(470, 840); x.lineTo(680, 600); x.lineTo(900, 800); x.lineTo(900, 1200); x.fill();
+  setPhoto(c.toDataURL("image/jpeg", .9));
+  if (DEMO === "signin") showSignIn();
+  if (DEMO === "buy") showBuy("You've used your free wallpapers");
+  if (DEMO === "error") showError("Our image service is busy. Try again in a minute. Your wallpaper wasn't charged.");
+  if (DEMO === "wait") { startWorking(); }
+  if (DEMO === "result") { const [w, h] = currentSize(); resultBlob = await fitExactly(photoDataUrl, w, h); showResult(w, h); }
+})();
 </script>
 </body>
 </html>
