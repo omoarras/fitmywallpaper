@@ -53,6 +53,11 @@ export async function takeCredits(sub, n) {
 
 export const giveCredits = (sub, n) => db().hincrby(userKey(sub), "credits", n);
 
+// "Paid" = has bought at least one pack; unlocks Ultra 4K.
+export async function isPaid(sub) {
+  return String((await db().hget(userKey(sub), "paid")) || "") === "1";
+}
+
 // ---------- Sessions (signed cookie, 30 days) ----------
 const COOKIE = "fmw_session";
 const MAX_AGE = 60 * 60 * 24 * 30;

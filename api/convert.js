@@ -1,5 +1,5 @@
 // POST {image, width, height, quality:"standard"|"ultra"} → wallpaper. Uses the person's wallpaper balance.
-import { getSession, takeCredits, giveCredits, json, COST } from "./_lib.js";
+import { getSession, takeCredits, giveCredits, isPaid, json, COST } from "./_lib.js";
 
 const MODEL = process.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
 const QUALITY = { standard: "medium", ultra: "high" };
@@ -14,33 +14,30 @@ export function generationSize(w, h) {
 }
 
 function buildPrompt(w, h) {
-  const orient = w > h ? "landscape" : w < h ? "portrait" : "square";
-  return `Universal Composition-Locked Wallpaper Prompt (v1)
+  const orient = w > h ? "landscape" : w < h ? "upright" : "square";
+  return `Convert the original photograph into a ${w}×${h} ${orient} wallpaper.
 
-Convert this image into a ${w}×${h} ${orient} wallpaper while preserving the exact visual composition of the original image. Composition is the highest priority. The apparent crop, framing, camera position, focal length, perspective, subject placement, subject size, and visual balance must remain identical. The final image should look like the original photograph simply exists on a canvas of the new shape—not like the camera moved, zoomed, or revealed more of the scene.
+ABSOLUTE PRIORITY: preserve the original photograph without regenerating or modifying its existing pixels. The original photo is placed in the canvas and is a locked, immutable photographic layer. Only generate pixels in the masked area outside the original image boundaries. The blurred border is only a placeholder showing which colours continue there; replace it with a natural continuation of the scene.
 
-Do NOT zoom out. Do NOT widen the field of view. Do NOT reveal additional portions of objects or the environment. Do NOT reposition or resize any existing element. The visible area of every object should remain visually identical to the original.
+Composition and subject preservation
+- Keep every person, animal and main subject exactly as photographed: faces, expressions, hairstyles, clothing, body proportions, hands, fingers and poses.
+- Do not enlarge, reshape, duplicate or reconstruct any hand, finger, arm, limb or face.
+- Keep every object, surface, piece of furniture, vehicle interior, building and landscape in the original area unchanged: same shape, position, texture and lighting.
+- Preserve the natural shape of surfaces such as seats, walls, floors, skies and fabrics. Do not create elongated strips, stretched surfaces, giant geometric shapes, artificial panels or other anomalous structures.
+- Do not invent, extend or reconstruct any existing body part or object beyond what is needed to continue it naturally past the edge.
 
-Adapt the image to ${w}×${h} by reconstructing only what is absolutely necessary to preserve the original composition at the new aspect ratio. Any generated content must seamlessly continue existing textures, lighting, reflections, shadows, colors, grain, and geometry without attracting attention or altering the scene.
+Canvas expansion
+Expand the canvas to ${w}×${h} using only the minimum necessary outpainting. Preserve the source image's original crop and scale. Do not zoom, pan, stretch, distort or resize the original image.
 
-Treat the original composition as locked. If preserving the composition conflicts with showing more of the environment, always preserve the composition.
+Where new pixels are required, continue the existing scene naturally. Match textures, materials, seams, perspective, shadows and lighting. Maintain physically plausible geometry and realistic boundaries between subjects, clothing and background.
 
-Output a sharp native ${w}×${h} image with identical color grading, contrast, noise, sharpness, and lighting. The viewer should perceive the exact same photograph, only reformatted to the new aspect ratio, with no visible AI edits or composition changes.
+Do not fill the new areas with large smooth shapes or repeated textures. Do not create extra people, arms, hands, fingers, limbs, or duplicate objects. Do not blend a person's clothing into the background.
 
-Composition Lock: 100%
+Strict editing rule: never regenerate the people or the original visible parts of the scene. If an area cannot be extended reliably, use a conservative, unobtrusive continuation of the surrounding background rather than inventing details.
 
-Camera locked.
-Lens locked.
-Perspective locked.
-Crop perception locked.
-Subject scale locked.
-Subject positions locked.
-Visual balance locked.
-No zoom.
-No pan.
-No camera movement.
-No additional scene revealed.
-Preserve the original image exactly; only adapt it to the target aspect ratio.`;
+Maintain the original color grading, exposure, grain, sharpness and natural camera appearance (if the original is an illustration or artwork, match its style instead). Output a clean ${w}×${h} wallpaper without visible AI artifacts or seams.
+
+Negative constraints: giant hands, distorted fingers, extra fingers, duplicated limbs, altered faces, changed body proportions, melted clothing, elongated or stretched surfaces, giant flat strips, warped geometry, invented objects, extra people, excessive outpainting, composition changes, artificial smoothing, visible seams.`;
 }
 
 export async function POST(request) {
@@ -53,6 +50,7 @@ export async function POST(request) {
   let body;
   try { body = await request.json(); } catch { return json({ error: "Please choose a photo." }, 400); }
   const { image, width, height } = body || {};
+  const mask = typeof body?.mask === "string" && body.mask.startsWith("data:image/png;base64,") && body.mask.length < 4_000_000 ? body.mask : null;
   const tier = body?.quality === "ultra" ? "ultra" : "standard";
   const w = Math.round(Number(width)), h = Math.round(Number(height));
   if (!image || !/^data:image\/(jpeg|png|webp);base64,/.test(image))
@@ -62,6 +60,12 @@ export async function POST(request) {
 
   let gw, gh;
   try { [gw, gh] = generationSize(w, h); } catch (e) { return json({ error: e.message }, 400); }
+
+  if (tier === "ultra") {
+    let paid = false;
+    try { paid = await isPaid(s.sub); } catch (e) { console.error(e); }
+    if (!paid) return json({ error: "Ultra 4K comes with any plan.", needUpgrade: true }, 402);
+  }
 
   // Charge first, refund if anything fails.
   const cost = COST[tier];
@@ -84,6 +88,7 @@ export async function POST(request) {
     fd.append("output_compression", "88"); // keeps the reply under Vercel's 4.5 MB limit
     fd.append("user", s.sub.slice(0, 64));
     fd.append("image", new Blob([buf], { type: mime }), "photo." + mime.split("/")[1]);
+    if (mask) fd.append("mask", new Blob([Buffer.from(mask.split(",")[1], "base64")], { type: "image/png" }), "mask.png");
 
     const r = await fetch("https://api.openai.com/v1/images/edits", {
       method: "POST",

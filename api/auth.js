@@ -1,6 +1,6 @@
 // POST {credential} from "Sign in with Google" → creates account (2 free wallpapers) and session.
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { db, userKey, json, sessionCookie, FREE_WALLPAPERS, getCredits, googleClientId } from "./_lib.js";
+import { db, userKey, json, sessionCookie, FREE_WALLPAPERS, getCredits, isPaid, googleClientId } from "./_lib.js";
 
 const JWKS = createRemoteJWKSet(new URL("https://www.googleapis.com/oauth2/v3/certs"));
 
@@ -26,7 +26,7 @@ export async function POST(request) {
     await db().hset(key, { email: g.email || "", name: g.name || "", ...(isNew ? { created: Date.now() } : {}) });
 
     const user = { sub: g.sub, email: g.email || "", name: g.given_name || g.name || "" };
-    return json({ ...user, credits: await getCredits(g.sub), isNew: !!isNew }, 200, {
+    return json({ ...user, credits: await getCredits(g.sub), paid: await isPaid(g.sub), isNew: !!isNew }, 200, {
       "Set-Cookie": sessionCookie(user),
     });
   } catch (e) {

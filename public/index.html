@@ -45,7 +45,7 @@
     {"@type":"Question","name":"Can I make a low quality photo into an HD or 4K wallpaper?",
      "acceptedAnswer":{"@type":"Answer","text":"Yes. Every wallpaper is rebuilt at high resolution, up to 4K, then sized exactly for your device."}},
     {"@type":"Question","name":"Is it free?",
-     "acceptedAnswer":{"@type":"Answer","text":"Your first 2 wallpapers are free. After that, packs start at 10 wallpapers for $2.99. You pay once and they never expire."}}
+     "acceptedAnswer":{"@type":"Answer","text":"Your first 2 wallpapers are free. After that, plans start at $5 for 10 wallpapers. You pay once and they never expire."}}
   ]
 }
 </script>
@@ -192,6 +192,8 @@ body{top:0!important}
 .seg button[aria-pressed="true"]{background:var(--orange)}
 .seg small{display:block;font-weight:500;font-size:13.5px;color:var(--ink-soft)}
 .seg button[aria-pressed="true"] small{color:var(--ink)}
+.upg{display:inline-block;margin-top:3px;padding:1px 12px;border:1.5px solid var(--ink);border-radius:999px;background:var(--orange);color:var(--ink);font-weight:700;font-size:13px}
+.chosen{margin-top:0}
 .chosen{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:16px;background:var(--cream);border:1.5px solid var(--line)}
 .chosen b{display:block;font-size:17px}
 .chosen span{font-size:15px;color:var(--ink-soft)}
@@ -262,6 +264,9 @@ body{top:0!important}
 .price-list .what span{font-size:15px;color:var(--ink-soft)}
 .price-list .amt{font-family:var(--hand);font-weight:700;font-size:28px}
 .price-list .best{background:var(--orange-soft)}
+.plan-row{display:flex;align-items:center;gap:14px;width:100%;margin:-16px -18px;padding:16px 18px;border:0;background:none;text-align:left;cursor:pointer;box-sizing:content-box}
+.plan-row:hover .amt{color:var(--orange-deep)}
+.price-list li:has(.plan-row){padding:16px 18px}
 .tag{display:inline-block;margin-left:6px;padding:1px 10px;border:1.5px solid var(--ink);border-radius:999px;background:var(--orange);font-size:13px;font-weight:700;vertical-align:2px}
 .price-side{text-align:center}
 .price-side img{width:min(300px,80%);margin:0 auto}
@@ -347,28 +352,29 @@ footer a{color:var(--ink);text-underline-offset:3px}
     <!-- Step 2 -->
     <section class="step" id="s2" aria-labelledby="s2h">
       <h2 id="s2h"><span class="num" aria-hidden="true">2</span>Choose your screen</h2>
-      <div class="search">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3a7 7 0 015.6 11.2l4.6 4.6-1.4 1.4-4.6-4.6A7 7 0 1110 3zm0 2a5 5 0 100 10 5 5 0 000-10z"/></svg>
-        <label class="sr" for="q">Search for your phone, tablet or screen</label>
-        <input id="q" type="search" placeholder="Type your phone, e.g. iPhone 15" autocomplete="off">
-      </div>
-      <div class="results" id="results" role="listbox" aria-label="Matching devices"></div>
-      <div class="cats" id="cats" role="group" aria-label="Device types"></div>
-      <div class="models" id="models" role="group" aria-label="Models"></div>
-      <div class="manual" id="manual">
-        <div class="row">
-          <div><label for="cw">Width in pixels</label><input type="number" id="cw" inputmode="numeric" min="200" max="8000" placeholder="1080"></div>
-          <div><label for="ch">Height in pixels</label><input type="number" id="ch" inputmode="numeric" min="200" max="8000" placeholder="2400"></div>
-        </div>
-      </div>
-      <div class="seg" id="orient" role="group" aria-label="Orientation">
-        <button type="button" data-o="portrait" aria-pressed="true">Upright</button>
-        <button type="button" data-o="landscape" aria-pressed="false">Sideways</button>
-      </div>
       <div class="chosen" id="chosen" aria-live="polite">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 1H8a3 3 0 00-3 3v16a3 3 0 003 3h8a3 3 0 003-3V4a3 3 0 00-3-3zm-4 20a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5-5H7V5h10v11z"/></svg></span>
         <div><b id="chosenName">This device</b><span id="chosenSize"></span></div>
-        <button class="linkbtn" id="useAuto" type="button" style="margin-left:auto" hidden>Use mine</button>
+        <button class="linkbtn" id="moreBtn" type="button" style="margin-left:auto" aria-expanded="false" aria-controls="more">Change</button>
+      </div>
+      <div id="more" hidden>
+        <p class="hint" style="margin:14px 2px 10px">Making it for another phone, tablet or screen? Search, tap a type, or enter the size yourself.</p>
+        <div class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3a7 7 0 015.6 11.2l4.6 4.6-1.4 1.4-4.6-4.6A7 7 0 1110 3zm0 2a5 5 0 100 10 5 5 0 000-10z"/></svg>
+          <label class="sr" for="q">Search for your phone, tablet or screen</label>
+          <input id="q" type="search" placeholder="Type a phone, e.g. iPhone 15" autocomplete="off">
+        </div>
+        <div class="results" id="results" role="listbox" aria-label="Matching devices"></div>
+        <div class="cats" id="cats" role="group" aria-label="Device types"></div>
+        <div class="models" id="models" role="group" aria-label="Models"></div>
+        <div class="manual" id="manual">
+          <div class="row">
+            <div><label for="cw">Width in pixels</label><input type="number" id="cw" inputmode="numeric" min="200" max="8000" placeholder="1080"></div>
+            <div><label for="ch">Height in pixels</label><input type="number" id="ch" inputmode="numeric" min="200" max="8000" placeholder="2400"></div>
+          </div>
+          <p class="hint">Wider than tall makes a sideways wallpaper.</p>
+        </div>
+        <button class="linkbtn" id="useAuto" type="button" style="margin-top:8px">Use this device instead</button>
       </div>
     </section>
 
@@ -377,7 +383,7 @@ footer a{color:var(--ink);text-underline-offset:3px}
       <h2 id="s3h"><span class="num" aria-hidden="true">3</span>Make your wallpaper</h2>
       <div class="seg" id="quality" role="group" aria-label="Quality" style="margin:0 0 14px">
         <button type="button" data-q="standard" aria-pressed="true"><span>HD<small>uses 1</small></span></button>
-        <button type="button" data-q="ultra" aria-pressed="false"><span>Ultra 4K<small>uses 3</small></span></button>
+        <button type="button" data-q="ultra" aria-pressed="false"><span>Ultra 4K<small id="ultraNote"><span class="upg">Upgrade</span></small></span></button>
       </div>
       <button class="btn" id="go" type="button" disabled>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8zM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9zM5 15l.7 1.6L7.3 17l-1.6.7L5 19.3l-.7-1.6L2.7 17l1.6-.4z"/></svg>
@@ -396,7 +402,7 @@ footer a{color:var(--ink);text-underline-offset:3px}
       <div class="panel" id="buy">
         <img class="pose" src="/brand/pawlo-sleeping.webp" alt="" width="120" height="120">
         <h3 id="buyTitle">You've used your free wallpapers</h3>
-        <p>Pick a pack. You pay once and they never expire.</p>
+        <p>Pick a plan. You pay once, they never expire, and Ultra 4K is included.</p>
         <div class="packs" id="packs"></div>
         <p class="hint">Card or PayPal, handled securely by Lemon Squeezy. Your wallpapers appear here right after paying.</p>
       </div>
@@ -445,7 +451,7 @@ footer a{color:var(--ink);text-underline-offset:3px}
   </div>
 
   <aside class="guide" aria-live="polite">
-    <div class="bubble" id="bubble">Hi, I'm Pawlo! Pick a photo and I'll make it fit your screen.</div>
+    <div class="bubble" id="bubble">Pick a photo and I'll make it fit your screen.</div>
     <img id="guideImg" class="flip" src="/brand/pawlo-pointing.webp" alt="Pawlo the dog" width="320" height="320">
   </aside>
 </main>
@@ -454,14 +460,14 @@ footer a{color:var(--ink);text-underline-offset:3px}
   <div class="pricing">
     <div>
       <h2 id="ph">Simple prices</h2>
-      <p>Start with 2 free wallpapers. After that, pay once for a pack. They never expire.</p>
+      <p>Start with 2 free wallpapers. After that, pick a plan and pay once. Your wallpapers never expire, and any plan unlocks Ultra 4K.</p>
       <ul class="price-list">
         <li><div class="what"><b>First 2 wallpapers</b><span>When you sign in</span></div><span class="amt">Free</span></li>
-        <li><div class="what"><b>10 wallpapers</b><span>$0.30 each</span></div><span class="amt">$2.99</span></li>
-        <li class="best"><div class="what"><b>30 wallpapers <span class="tag">Most popular</span></b><span>$0.23 each</span></div><span class="amt">$6.99</span></li>
-        <li><div class="what"><b>100 wallpapers</b><span>$0.20 each</span></div><span class="amt">$19.99</span></li>
+        <li><button class="plan-row" type="button" data-pack="10"><span class="what"><b>Basic</b><span>10 wallpapers, $0.50 each</span></span><span class="amt">$5</span></button></li>
+        <li><button class="plan-row" type="button" data-pack="30"><span class="what"><b>Pro</b><span>30 wallpapers, $0.33 each</span></span><span class="amt">$10</span></button></li>
+        <li class="best"><button class="plan-row" type="button" data-pack="100"><span class="what"><b>Max <span class="tag">Recommended</span></b><span>100 wallpapers, $0.20 each</span></span><span class="amt">$20</span></button></li>
       </ul>
-      <p class="hint">HD uses 1 from your pack. Ultra 4K uses 3. If a wallpaper fails, it's returned to you automatically.</p>
+      <p class="hint">HD uses 1 wallpaper. Ultra 4K, included with every plan, uses 3. If a wallpaper fails, it's returned to you automatically.</p>
     </div>
     <div class="price-side" aria-hidden="true">
       <img src="/brand/pawlo-phone.webp" alt="" width="300" height="300" loading="lazy">
@@ -482,7 +488,7 @@ footer a{color:var(--ink);text-underline-offset:3px}
   <details><summary>Can a low quality photo become HD or 4K?</summary>
     <p>Yes. Every wallpaper is rebuilt at high resolution, up to 4K, then sized exactly for your device.</p></details>
   <details><summary>Is it free?</summary>
-    <p>Your first 2 wallpapers are free. After that you can buy a pack: 10 for $2.99, 30 for $6.99 or 100 for $19.99. You pay once and they never expire.</p></details>
+    <p>Your first 2 wallpapers are free. After that you can pick a plan: Basic is 10 for $5, Pro is 30 for $10, and Max is 100 for $20. You pay once, they never expire, and every plan unlocks Ultra 4K.</p></details>
   <details><summary>Do you keep my photos?</summary>
     <p>No. Your photo is used only to make your wallpaper and is not stored by Pawlo.</p></details>
 </section>
@@ -534,11 +540,11 @@ const GROUPS = [
 ];
 const ALL = GROUPS.flatMap((g) => (g.models || []).map((m) => ({ g: g.id, name: m[0], w: m[1], h: m[2] })));
 
-let orient = "portrait", quality = "standard", photoDataUrl = null, resultBlob = null;
+let quality = "standard", photoDataUrl = null, resultBlob = null;
 let pick = { g: "auto" };   // {g, name, w, h}
 const COST = { standard: 1, ultra: 3 };
-const PRICES = { 10: "$2.99", 30: "$6.99", 100: "$19.99" };
-let me = null, cfg = { googleClientId: "", packs: [] }, pendingMake = false;
+const PLANS = { 10: { name: "Basic", price: 5 }, 30: { name: "Pro", price: 10 }, 100: { name: "Max", price: 20 } };
+let me = null, cfg = { googleClientId: "", packs: [] }, pendingMake = false, pendingBuy = 0;
 const DEMO = new URLSearchParams(location.search).get("demo");
 
 const store = {
@@ -557,7 +563,7 @@ function say(text, pose = "pointing") {
   img.classList.toggle("flip", pose === "pointing");
 }
 function guideForState() {
-  if (!photoDataUrl) return say("Hi, I'm Pawlo! Pick a photo and I'll make it fit your screen.");
+  if (!photoDataUrl) return say("Pick a photo and I'll make it fit your screen.");
   const [w, h] = currentSize();
   if (!(w >= 200 && h >= 200)) return say("Type your screen's width and height so I know the size.");
   say("Lovely photo! Check the screen is right, then tap Make my wallpaper.");
@@ -573,11 +579,8 @@ function autoSize() {
 }
 function currentSize() {
   if (pick.g === "custom") return [Number($("cw").value), Number($("ch").value)];
-  let w, h, fixed = false;
-  if (pick.g === "auto") { const [aw, ah, mobile] = autoSize(); w = aw; h = ah; fixed = !mobile; }
-  else { w = pick.w; h = pick.h; }
-  if (fixed || w > h) return [w, h];          // computers & TVs are always landscape
-  return orient === "landscape" ? [h, w] : [w, h];
+  if (pick.g === "auto") { const [w, h] = autoSize(); return [w, h]; }
+  return [pick.w, pick.h];
 }
 function renderCats() {
   $("cats").innerHTML = "";
@@ -614,7 +617,15 @@ function choose(p) {
   if (openG !== p.g) openGroup(p.g);
   [...$("models").children].forEach((m) => m.setAttribute("aria-pressed", String(m.textContent === p.name)));
   refreshUI();
+  setMore(false);
+  $("chosen").scrollIntoView({ behavior: "smooth", block: "center" });
 }
+function setMore(open) {
+  $("more").hidden = !open;
+  $("moreBtn").setAttribute("aria-expanded", String(open));
+  $("moreBtn").textContent = open ? "Close" : "Change";
+}
+$("moreBtn").addEventListener("click", () => setMore($("more").hidden));
 $("q").addEventListener("input", () => {
   const q = $("q").value.trim().toLowerCase();
   const box = $("results");
@@ -632,7 +643,7 @@ $("q").addEventListener("input", () => {
   box.style.display = "block";
 });
 $("cw").addEventListener("input", refreshUI);
-$("useAuto").addEventListener("click", () => { pick = { g: "auto" }; openG = null; $("models").classList.remove("open"); $("manual").classList.remove("open"); [...$("cats").children].forEach((c) => c.setAttribute("aria-pressed", "false")); refreshUI(); });
+$("useAuto").addEventListener("click", () => { pick = { g: "auto" }; openG = null; $("models").classList.remove("open"); $("manual").classList.remove("open"); [...$("cats").children].forEach((c) => c.setAttribute("aria-pressed", "false")); refreshUI(); setMore(false); });
 $("ch").addEventListener("input", refreshUI);
 function segToggle(groupId, attr, cb) {
   $(groupId).addEventListener("click", (e) => {
@@ -641,14 +652,31 @@ function segToggle(groupId, attr, cb) {
     cb(b.dataset[attr]);
   });
 }
-segToggle("orient", "o", (v) => { orient = v; refreshUI(); });
-segToggle("quality", "q", (v) => { quality = v; });
+// Ultra 4K comes with any plan; free users get sent to the plans.
+$("quality").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.q === "ultra" && !(me && me.paid)) return goPlans();
+  quality = b.dataset.q;
+  [...$("quality").children].forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+});
+function renderQuality() {
+  const paid = !!(me && me.paid);
+  $("ultraNote").innerHTML = paid ? "uses 3" : '<span class="upg">Upgrade</span>';
+  if (!paid && quality === "ultra") { quality = "standard"; [...$("quality").children].forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.q === "standard"))); }
+}
+function goPlans() {
+  say("Ultra 4K comes with every plan. Pick one below.", "pointing");
+  $("pricing").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+document.querySelectorAll(".plan-row").forEach((b) => b.addEventListener("click", () => {
+  const n = Number(b.dataset.pack);
+  if (!me && !DEMO) { pendingBuy = n; $("tool").scrollIntoView({ behavior: "smooth" }); return showSignIn("Sign in to choose a plan"); }
+  buy(n);
+}));
 
 function refreshUI() {
   const [w, h] = currentSize();
   const ok = w >= 200 && h >= 200;
-  const landscapeFixed = (pick.g === "auto" && !autoSize()[2]) || (pick.w && pick.w > pick.h);
-  $("orient").style.display = landscapeFixed ? "none" : "flex";
   $("useAuto").hidden = pick.g === "auto";
   $("chosenName").textContent = pick.g === "auto" ? "This device" : pick.g === "custom" ? "My own size" : pick.name;
   $("chosenSize").textContent = ok ? `${w} × ${h} pixels` : "Enter a width and height (at least 200)";
@@ -704,6 +732,7 @@ async function loadMe() {
   return me;
 }
 function renderAccount() {
+  renderQuality();
   const a = $("acct");
   if (me) {
     a.hidden = false;
@@ -732,9 +761,10 @@ function renderPacks() {
   if (!avail.length) { box.innerHTML = '<p class="hint">Packs are coming soon.</p>'; return; }
   avail.forEach((n) => {
     const b = document.createElement("button");
-    b.type = "button"; b.className = "pack" + (n === 30 ? " best" : "");
-    const each = (parseFloat(PRICES[n].slice(1)) / n).toFixed(2);
-    b.innerHTML = `<span class="what"><b>${n} wallpapers${n === 30 ? ' <span class="tag">Most popular</span>' : ""}</b><span>$${each} each</span></span><span class="amt">${PRICES[n]}</span>`;
+    const P = PLANS[n];
+    b.type = "button"; b.className = "pack" + (n === 100 ? " best" : "");
+    const each = (P.price / n).toFixed(2);
+    b.innerHTML = `<span class="what"><b>${P.name}${n === 100 ? ' <span class="tag">Recommended</span>' : ""}</b><span>${n} wallpapers, $${each} each</span></span><span class="amt">$${P.price}</span>`;
     b.addEventListener("click", () => buy(n));
     box.appendChild(b);
   });
@@ -773,8 +803,9 @@ function loadGoogle() {
   });
   return gReady;
 }
-async function showSignIn() {
+async function showSignIn(title) {
   closePanels();
+  $("signin").querySelector("h3").textContent = title || "Sign in to start";
   $("signin").classList.add("open");
   say("Sign in with Google and your first 2 wallpapers are on me.");
   $("signin").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -790,8 +821,9 @@ async function onGoogle(resp) {
     const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential: resp.credential }) });
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || "Sign-in didn't work. Try again.");
-    me = { name: d.name, email: d.email, credits: d.credits };
+    me = { name: d.name, email: d.email, credits: d.credits, paid: !!d.paid };
     renderAccount();
+    if (pendingBuy) { const n = pendingBuy; pendingBuy = 0; return buy(n); }
     if (pendingMake) { pendingMake = false; make(); } else guideForState();
   } catch (e) { showError(e.message); }
 }
@@ -837,16 +869,18 @@ async function make() {
   startWorking();
   try {
     let data;
-    if (DEMO) { await new Promise((r) => setTimeout(r, 2500)); data = { image: photoDataUrl, credits: 1 }; }
+    const prep = await prepareCanvas(photoDataUrl, w, h);
+    if (DEMO) { await new Promise((r) => setTimeout(r, 2500)); data = { image: prep.image, credits: 1 }; }
     else {
-      const r = await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: photoDataUrl, width: w, height: h, quality }) });
+      const r = await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: prep.image, mask: prep.mask, width: w, height: h, quality }) });
       data = await r.json().catch(() => ({}));
       if (data.needLogin) { stopWorking(); me = null; renderAccount(); pendingMake = true; return showSignIn(); }
+      if (data.needUpgrade) { stopWorking(); return goPlans(); }
       if (data.needCredits) { stopWorking(); await loadMe(); return showBuy("You've used your free wallpapers"); }
       if (!r.ok || !data.image) throw new Error(data.error || "Something went wrong. Your wallpaper wasn't charged. Try again.");
     }
     if (me && typeof data.credits === "number") { me.credits = data.credits; renderAccount(); }
-    resultBlob = await fitExactly(data.image, w, h);
+    resultBlob = await compositeLocked(data.image, photoDataUrl, w, h);
     stopWorking();
     showResult(w, h);
   } catch (e) {
@@ -890,6 +924,53 @@ $("again").addEventListener("click", () => {
   refreshUI();
   $("tool").scrollIntoView({ behavior: "smooth", block: "start" });
 });
+// ---------- locked original ----------
+const loadImg = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+// Where the original sits inside a w×h canvas: whole photo, never cropped or zoomed.
+function containRect(iw, ih, w, h) {
+  const s = Math.min(w / iw, h / ih), dw = iw * s, dh = ih * s;
+  return { x: (w - dw) / 2, y: (h - dh) / 2, w: dw, h: dh };
+}
+// Canvas at the target shape: original in the middle, blurred colour hints around it,
+// plus a mask where transparent = "AI may paint here" and opaque = "locked original".
+async function prepareCanvas(src, w, h) {
+  const img = await loadImg(src);
+  const long = 1536, k = long / Math.max(w, h);
+  const cw = Math.round(w * k), ch = Math.round(h * k);
+  const r = containRect(img.naturalWidth, img.naturalHeight, cw, ch);
+  const c = document.createElement("canvas"); c.width = cw; c.height = ch;
+  const x = c.getContext("2d");
+  const cov = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+  x.filter = "blur(24px)";
+  x.drawImage(img, (cw - img.naturalWidth * cov) / 2, (ch - img.naturalHeight * cov) / 2, img.naturalWidth * cov, img.naturalHeight * cov);
+  x.filter = "none";
+  x.drawImage(img, r.x, r.y, r.w, r.h);
+  const m = document.createElement("canvas"); m.width = cw; m.height = ch;
+  const mx = m.getContext("2d");
+  mx.fillStyle = "#000"; mx.fillRect(Math.round(r.x) + 1, Math.round(r.y) + 1, Math.round(r.w) - 2, Math.round(r.h) - 2);
+  return { image: c.toDataURL("image/jpeg", 0.92), mask: m.toDataURL("image/png") };
+}
+// Final wallpaper: AI result underneath, the untouched original pasted back on top
+// with a soft few-pixel edge so there's no visible seam.
+async function compositeLocked(resultSrc, origSrc, w, h) {
+  const [res, orig] = await Promise.all([loadImg(resultSrc), loadImg(origSrc)]);
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d"); x.imageSmoothingQuality = "high";
+  const s = Math.max(w / res.naturalWidth, h / res.naturalHeight);
+  x.drawImage(res, (w - res.naturalWidth * s) / 2, (h - res.naturalHeight * s) / 2, res.naturalWidth * s, res.naturalHeight * s);
+  const r = containRect(orig.naturalWidth, orig.naturalHeight, w, h);
+  const t = document.createElement("canvas"); t.width = Math.round(r.w); t.height = Math.round(r.h);
+  const tx = t.getContext("2d"); tx.imageSmoothingQuality = "high";
+  tx.drawImage(orig, 0, 0, t.width, t.height);
+  const f = Math.max(2, Math.round(Math.min(t.width, t.height) * 0.012));
+  tx.globalCompositeOperation = "destination-out";
+  const fade = (x0, y0, x1, y1, rx, ry, rw, rh) => { const g = tx.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)"); tx.fillStyle = g; tx.fillRect(rx, ry, rw, rh); };
+  if (r.x > 1) { fade(0, 0, f, 0, 0, 0, f, t.height); fade(t.width, 0, t.width - f, 0, t.width - f, 0, f, t.height); }
+  if (r.y > 1) { fade(0, 0, 0, f, 0, 0, t.width, f); fade(0, t.height, 0, t.height - f, 0, t.height - f, t.width, f); }
+  x.drawImage(t, Math.round(r.x), Math.round(r.y));
+  return new Promise((ok, bad) => c.toBlob((b) => (b ? ok(b) : bad()), "image/jpeg", 0.95));
+}
+
 function fitExactly(src, w, h) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -988,7 +1069,7 @@ if (DEMO) (async () => {
   if (DEMO === "buy") showBuy("You've used your free wallpapers");
   if (DEMO === "error") showError("Our image service is busy. Try again in a minute. Your wallpaper wasn't charged.");
   if (DEMO === "wait") { startWorking(); }
-  if (DEMO === "result") { const [w, h] = currentSize(); resultBlob = await fitExactly(photoDataUrl, w, h); showResult(w, h); }
+  if (DEMO === "result") { const [w, h] = currentSize(); const prep = await prepareCanvas(photoDataUrl, w, h); resultBlob = await compositeLocked(prep.image, photoDataUrl, w, h); showResult(w, h); }
 })();
 </script>
 </body>

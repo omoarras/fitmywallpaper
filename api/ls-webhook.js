@@ -1,7 +1,7 @@
 // Lemon Squeezy calls this after a payment. Adds the bought wallpapers to the buyer's balance.
 // Products must be named with their amount, e.g. "10 Wallpapers", "30 Wallpapers", "100 Wallpapers".
 import crypto from "node:crypto";
-import { db, giveCredits, json } from "./_lib.js";
+import { db, giveCredits, json, userKey } from "./_lib.js";
 
 export async function POST(request) {
   const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
@@ -37,6 +37,7 @@ export async function POST(request) {
 
   const change = (refund ? -1 : 1) * amount * qty;
   let balance = await giveCredits(userId, change);
+  if (!refund) await db().hset(userKey(userId), { paid: "1" });
   if (balance < 0) balance = await giveCredits(userId, -balance); // never below zero
   console.log(`Order ${body.data.id} ${event}: ${change} wallpapers for ${userId} (now ${balance})`);
   return json({ ok: true });
