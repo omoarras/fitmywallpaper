@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>relay</title>
+<script>
+// Hands our public videos/images to the posting tool's tab (opener). Only for tiktok.com / facebook.com / instagram.com openers.
+const ok = ["https://www.tiktok.com","https://business.facebook.com","https://www.facebook.com","https://www.instagram.com"];
+const files = new URLSearchParams(location.search).getAll("f").filter(f => /^(videos|pins)\/[\w.-]+$/.test(f));
+(async () => {
+  for (const f of files) {
+    const blob = await fetch("/" + f).then(r => r.blob());
+    for (const o of ok) try { window.opener && window.opener.postMessage({ pawlo: true, name: f.split("/").pop(), blob }, o); } catch (e) {}
+  }
+  document.body.textContent = "sent " + files.length;
+})();
+</script>
