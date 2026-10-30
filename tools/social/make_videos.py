@@ -3,7 +3,7 @@ import pathlib, subprocess
 from playwright.sync_api import sync_playwright
 from make_mockups import CSS, phone, laptop, bad_style, GOOD, SRC, LOGO
 
-OUT = pathlib.Path(__file__).parent / "videos"; OUT.mkdir(exist_ok=True)
+OUT = pathlib.Path(__file__).parent / "videos"
 W, H = 1080, 1920
 base = CSS.replace("body{width:1000px;height:1500px;", "body{") + f"body{{width:{W}px;height:{H}px}}"
 
