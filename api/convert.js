@@ -2,6 +2,8 @@
 import { getSession, takeCredits, giveCredits, isPaid, ownerTopUp, json, COST, db, userKey } from "./_lib.js";
 
 const MODEL = process.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
+// Chat model that reads the photo and prompt first, like ChatGPT does ("chat-latest" = ChatGPT model).
+const CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || "chat-latest";
 const QUALITY = { standard: "medium", ultra: "high" };
 
 // gpt-image-2 rules: long edge <= 3840, sides multiple of 16, ratio <= 3:1, <= 8,294,400 pixels.
@@ -78,7 +80,6 @@ export async function POST(request) {
   let body;
   try { body = await request.json(); } catch { return json({ error: "Please choose a photo." }, 400); }
   const { image, width, height } = body || {};
-  const mask = typeof body?.mask === "string" && body.mask.startsWith("data:image/png;base64,") && body.mask.length < 4_000_000 ? body.mask : null;
   const tier = body?.quality === "ultra" ? "ultra" : "standard";
   const w = Math.round(Number(width)), h = Math.round(Number(height));
   if (!image || !/^data:image\/(jpeg|png|webp);base64,/.test(image))
@@ -107,34 +108,50 @@ export async function POST(request) {
     const buf = Buffer.from(image.split(",")[1], "base64");
     if (buf.length > 3_200_000) throw Object.assign(new Error("That photo is too large."), { user: true });
 
-    const fd = new FormData();
-    fd.append("model", MODEL);
-    fd.append("prompt", buildPrompt(w, h, body?.device));
-    fd.append("size", `${gw}x${gh}`);
-    fd.append("quality", QUALITY[tier]);
-    fd.append("n", "1");
-    fd.append("output_format", "webp");
-    fd.append("output_compression", "88"); // keeps the reply under Vercel's 4.5 MB limit
-    fd.append("user", s.sub.slice(0, 64));
-    fd.append("image", new Blob([buf], { type: mime }), "photo." + mime.split("/")[1]);
-    if (mask) fd.append("mask", new Blob([Buffer.from(mask.split(",")[1], "base64")], { type: "image/png" }), "mask.png");
+    const prompt = buildPrompt(w, h, body?.device);
+    let b64 = null, errCode = null;
 
-    const r = await fetch("https://api.openai.com/v1/images/edits", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}` },
-      body: fd,
-    });
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      console.error("OpenAI error", r.status, data?.error);
-      const code = data?.error?.code;
-      const msg = code === "moderation_blocked"
-        ? "This photo can't be processed. Please try another."
-        : "Our image service is busy. Please try again in a minute.";
-      throw Object.assign(new Error(msg), { user: true });
+    // 1) Same path as ChatGPT: a chat model reads the photo + prompt, then calls the image tool.
+    try {
+      const r = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: CHAT_MODEL,
+          input: [{ role: "user", content: [
+            { type: "input_text", text: prompt },
+            { type: "input_image", image_url: image },
+          ] }],
+          tools: [{ type: "image_generation", model: MODEL, action: "edit", size: `${gw}x${gh}`, quality: QUALITY[tier], output_format: "webp", output_compression: 88 }],
+          tool_choice: { type: "image_generation" },
+          user: s.sub.slice(0, 64),
+        }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) { errCode = data?.error?.code; console.error("Responses error", r.status, data?.error); }
+      else b64 = (data.output || []).find((o) => o.type === "image_generation_call" && o.result)?.result || null;
+    } catch (e) { console.error("Responses failed", e); }
+
+    // 2) Backup: direct image edit (used only if the first path fails).
+    if (!b64 && errCode !== "moderation_blocked") {
+      const fd = new FormData();
+      fd.append("model", MODEL);
+      fd.append("prompt", prompt);
+      fd.append("size", `${gw}x${gh}`);
+      fd.append("quality", QUALITY[tier]);
+      fd.append("n", "1");
+      fd.append("output_format", "webp");
+      fd.append("output_compression", "88"); // keeps the reply under Vercel's 4.5 MB limit
+      fd.append("user", s.sub.slice(0, 64));
+      fd.append("image", new Blob([buf], { type: mime }), "photo." + mime.split("/")[1]);
+      const r = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { Authorization: `Bearer ${key}` }, body: fd });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) { errCode = data?.error?.code; console.error("OpenAI error", r.status, data?.error); }
+      else b64 = data?.data?.[0]?.b64_json || null;
     }
-    const b64 = data?.data?.[0]?.b64_json;
-    if (!b64) throw Object.assign(new Error("No image came back. Please try again."), { user: true });
+    if (!b64) throw Object.assign(new Error(errCode === "moderation_blocked"
+      ? "This photo can't be processed. Please try another."
+      : "Our image service is busy. Please try again in a minute."), { user: true });
     // Free users: first wallpaper is clean, later ones carry the small Pawlo mark. Plan holders: never marked.
     let mark = false;
     try {
