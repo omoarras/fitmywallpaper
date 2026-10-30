@@ -7,12 +7,16 @@ const CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || "chat-latest";
 const QUALITY = { standard: "medium", ultra: "high" };
 
 // gpt-image-2 rules: long edge <= 3840, sides multiple of 16, ratio <= 3:1, <= 8,294,400 pixels.
-export function generationSize(w, h) {
+// HD ("standard"): the screen's own resolution (no wasted pixels). Ultra: as large as the model allows (~4K).
+export function generationSize(w, h, tier = "ultra") {
   const long = Math.max(w, h), short = Math.min(w, h);
   if (long / short > 3) throw new Error("That shape is too extreme (max 3:1).");
-  const scale = Math.min(3840 / long, Math.sqrt(8_294_400 / (w * h)));
-  const r16 = (v) => Math.max(16, Math.floor((v * scale) / 16) * 16);
-  return [r16(w), r16(h)];
+  const max = Math.min(3840 / long, Math.sqrt(8_294_400 / (w * h)));
+  const scale = tier === "ultra" ? max : Math.min(max, Math.max(1, Math.sqrt(1_048_576 / (w * h))));
+  const round = (v) => Math.max(16, (tier === "ultra" ? Math.floor : Math.ceil)((v * scale) / 16) * 16);
+  let [gw, gh] = [round(w), round(h)];
+  if (Math.max(gw, gh) > 3840 || gw * gh > 8_294_400) [gw, gh] = [Math.floor((w * max) / 16) * 16, Math.floor((h * max) / 16) * 16];
+  return [gw, gh];
 }
 
 // The user's "Universal Composition-Locked Wallpaper Prompt (v1)", with the size filled in per screen.
@@ -88,7 +92,7 @@ export async function POST(request) {
     return json({ error: "Size must be between 200 and 8000 pixels." }, 400);
 
   let gw, gh;
-  try { [gw, gh] = generationSize(w, h); } catch (e) { return json({ error: e.message }, 400); }
+  try { [gw, gh] = generationSize(w, h, tier); } catch (e) { return json({ error: e.message }, 400); }
 
   try { await ownerTopUp(s.sub, s.email); } catch (e) { console.error(e); }
   if (tier === "ultra") {

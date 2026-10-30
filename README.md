@@ -13,5 +13,5 @@ Optional settings (Environment Variables):
 - LIMIT_PER_HOUR   conversions per visitor per hour (default 6)
 - OPENAI_IMAGE_QUALITY   high | medium | low (default high; lower = cheaper)
 
-If your address isn't fit-my-wallpaper.vercel.app, replace that address in
+If your address isn't www.pawlowallpaper.com, replace that address in
 public/index.html, public/robots.txt and public/sitemap.xml.
