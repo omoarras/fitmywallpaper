@@ -6,7 +6,7 @@ const files = new URLSearchParams(location.search).getAll("f").filter(f => /^(vi
 (async () => {
   for (const f of files) {
     const blob = await fetch("/" + f).then(r => r.blob());
-    for (const o of ok) try { window.opener && window.opener.postMessage({ pawlo: true, name: f.split("/").pop(), blob }, o); } catch (e) {}
+    for (const o of ok) try { (window.opener || (window.parent !== window ? window.parent : null))?.postMessage({ pawlo: true, name: f.split("/").pop(), blob }, o); } catch (e) {}
   }
   document.body.textContent = "sent " + files.length;
 })();
