@@ -1,4 +1,12 @@
 {
   "outputDirectory": "public",
-  "functions": { "api/convert.js": { "maxDuration": 300 } }
+  "functions": { "api/convert.js": { "maxDuration": 300 } },
+  "redirects": [
+    {
+      "source": "/:path((?!api/).*)",
+      "has": [{ "type": "host", "value": "fit-my-wallpaper.vercel.app" }],
+      "destination": "https://www.pawlowallpaper.com/:path",
+      "permanent": true
+    }
+  ]
 }
