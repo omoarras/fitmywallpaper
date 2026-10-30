@@ -27,6 +27,15 @@
           "value": "*"
         }
       ]
+    },
+    {
+      "source": "/pins/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
     }
   ]
 }
