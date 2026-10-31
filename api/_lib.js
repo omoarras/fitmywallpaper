@@ -8,7 +8,7 @@ export const googleClientId = () =>
   process.env.GOOGLE_CLIENT_ID || "520588086441-dm9obqt9m24hopbrlouaiqfivcouedds.apps.googleusercontent.com";
 export const COST = { standard: 1, ultra: 3 };
 // Lemon Squeezy checkout links (public). Can be overridden with LS_CHECKOUT_10/30/100 env vars.
-const LS = "https://fit-my-wallpaper.lemonsqueezy.com/checkout/buy/";
+const LS = "https://pawlowallpaper.lemonsqueezy.com/checkout/buy/";
 const DEFAULT_LINKS = {
   10: LS + "946c4624-dbe1-4c02-ac58-d9bbb3021c06",
   30: LS + "b46fb86e-ec28-42bf-bd24-6967a7bbf68a",
