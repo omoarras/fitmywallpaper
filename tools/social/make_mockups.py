@@ -83,6 +83,15 @@ PINS = [
   ("20-monkey-zoomed", two_phones("monkey3", "Lock screen zoomed in too much?", "Keep the whole view. Fitted to your screen in one tap.", "zoom", "Zoomed in", "Pawlo fit", "30% 60%")),
   ("21-nyc-blurry", two_phones("nyc", "Blurry Pinterest pic to sharp wallpaper", "Sized to the exact pixel for iPhone, Samsung and more.", "blurry", "Blurry", "Sharp HD", "50% 72%")),
   ("22-bridge-laptop", two_laptops("bridge", "Phone wallpaper to laptop wallpaper", "No black bars. Same photo, full screen.", "bars", "Black bars", "Pawlo fit")),
+  ("23-samoyed-cropped", two_phones("samoyed", "Beach photo, full lock screen", "Pawlo fits the whole view to every corner of your phone.", "crop", "Cropped", "Whole photo")),
+  ("24-chick-zoomed", two_phones("chick", "Sunset pic zoomed in too much?", "Keep the whole sunset. Fitted to your screen in one tap.", "zoom", "Zoomed in", "Pawlo fit", "50% 55%")),
+  ("25-chicken-stretched", two_phones("chicken", "Square pics look stretched?", "Pawlo rebuilds your photo at your phone's exact size.", "stretch", "Stretched", "Pawlo fit")),
+  ("26-catcliff-cropped", two_phones("catcliff", "Wide photo to phone wallpaper", "No cut-off edges. The whole scene, edge to edge.", "crop", "Cropped", "Whole photo")),
+  ("27-orangutan-blurry", two_phones("orangutan", "Blurry pic to sharp HD wallpaper", "Sized to the exact pixel for iPhone, Samsung and more.", "blurry", "Blurry", "Sharp HD", "50% 45%")),
+  ("28-dogapple-cropped", two_phones("dogapple", "Keep the whole photo on your lock screen", "Square pics get cut off. Pawlo fills every corner.", "crop", "Cropped", "Whole photo")),
+  ("29-sloths-zoomed", two_phones("sloths", "Lock screen zoomed in too much?", "See the whole photo, fitted to your phone in one tap.", "zoom", "Zoomed in", "Pawlo fit", "45% 50%")),
+  ("30-kitten-stretched", two_phones("kitten", "Wallpaper looks stretched?", "Pawlo fits any photo to your phone, no stretching.", "stretch", "Stretched", "Pawlo fit")),
+  ("31-street-laptop", two_laptops("street", "Phone photo to laptop wallpaper", "No black bars. Same photo, full screen.", "bars", "Black bars", "Pawlo fit")),
   ("17-cat-every-screen", phone_and_laptop("cat2", "One photo. Every screen.", "Pawlo fits the same picture to your phone and your laptop, edge to edge.")),
 ]
 
