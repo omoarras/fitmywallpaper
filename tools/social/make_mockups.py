@@ -92,6 +92,9 @@ PINS = [
   ("29-sloths-zoomed", two_phones("sloths", "Lock screen zoomed in too much?", "See the whole photo, fitted to your phone in one tap.", "zoom", "Zoomed in", "Pawlo fit", "45% 50%")),
   ("30-kitten-stretched", two_phones("kitten", "Wallpaper looks stretched?", "Pawlo fits any photo to your phone, no stretching.", "stretch", "Stretched", "Pawlo fit")),
   ("31-street-laptop", two_laptops("street", "Phone photo to laptop wallpaper", "No black bars. Same photo, full screen.", "bars", "Black bars", "Pawlo fit")),
+  ("32-slothberry-cropped", two_phones("slothberry", "Strawberry sloth, full lock screen", "Nothing cut off. Pawlo fits the whole photo to your phone.", "crop", "Cropped", "Whole photo")),
+  ("33-gingerkit-stretched", two_phones("gingerkit", "Square kitten pic looks stretched?", "Pawlo rebuilds it at your phone's exact size.", "stretch", "Stretched", "Pawlo fit")),
+  ("34-pug-zoomed", two_phones("pug", "Lock screen zoomed in too much?", "Keep the whole view, fitted to your screen in one tap.", "zoom", "Zoomed in", "Pawlo fit", "60% 55%")),
   ("17-cat-every-screen", phone_and_laptop("cat2", "One photo. Every screen.", "Pawlo fits the same picture to your phone and your laptop, edge to edge.")),
 ]
 
