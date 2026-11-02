@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>view</title>
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}img{position:absolute;top:50%;left:50%;max-width:none}</style>
+<img id="i">
+<script>
+const q=new URLSearchParams(location.search),i=document.getElementById('i');
+i.onload=()=>{const W=innerWidth,H=innerHeight,w=i.naturalWidth,h=i.naturalHeight;
+ if(h>w){const s=Math.min(W/h,H/w);i.style.width=w*s+'px';i.style.height=h*s+'px';i.style.transform='translate(-50%,-50%) rotate(-90deg)';}
+ else{const s=Math.min(W/w,H/h);i.style.width=w*s+'px';i.style.height=h*s+'px';i.style.transform='translate(-50%,-50%)';}
+ document.title='ready';};
+i.src='/api/tmp?k='+encodeURIComponent(q.get('k'));
+</script>
