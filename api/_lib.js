@@ -55,7 +55,7 @@ export async function takeCredits(sub, n) {
 export const giveCredits = (sub, n) => db().hincrby(userKey(sub), "credits", n);
 
 // Owner accounts: always topped up, Ultra 4K unlocked, no mark. Add more with OWNER_EMAILS (comma-separated).
-const OWNERS = () => (process.env.OWNER_EMAILS || "omarmohfuture@gmail.com").toLowerCase().split(",").map((e) => e.trim()).filter(Boolean);
+export const OWNERS = () => (process.env.OWNER_EMAILS || "omarmohfuture@gmail.com").toLowerCase().split(",").map((e) => e.trim()).filter(Boolean);
 export async function ownerTopUp(sub, email) {
   if (!email || !OWNERS().includes(String(email).toLowerCase())) return;
   const key = userKey(sub);
