@@ -25,8 +25,8 @@ X = """
 """
 BIGCLOCK = '<div class="bigclock"><span>Friday, October 30</span><b>9:41</b></div>'
 
-def A(name, title, sub, kind):
-    return f"""<div class="full" style="background-image:url({RESU(name + '-phone')})"></div>{BIGCLOCK}<div class="shade"></div>
+def A(name, title, sub, kind, pos="center"):
+    return f"""<div class="full" style="background-image:url({RESU(name + '-phone')});background-position:{pos}"></div>{BIGCLOCK}<div class="shade"></div>
 <div class="pola" style="right:60px;top:560px"><div style="width:230px;height:230px;background-image:url({SRC(name)})"></div><span>before: {kind}</span></div>
 <div class="cap">{title}</div><div class="capsub">{sub}</div>{FOOT}"""
 
@@ -86,3 +86,22 @@ if __name__ == "__main__":
             pg.goto(f"file://{f}"); pg.wait_for_timeout(400); pg.screenshot(path=str(OUT / f"{name}.png")); f.unlink()
         b.close()
     print(len(list(OUT.glob("*.png"))))
+
+PINS2 = [
+  ("110-slothberry-wall", A("slothberry", "Strawberry sloth lock screen", "Cute photo, fitted to every corner of the phone.", "cut off")),
+  ("111-gingerkit-wall", A("gingerkit", "Sunny kitten wallpaper", "Square pic turned into a full lock screen.", "square", "50% 75%")),
+  ("112-pug-wall", A("pug", "Happy pug lock screen", "The whole view, sized to your phone.", "zoomed", "50% 70%")),
+  ("113-orangutan-wall", A("orangutan", "Summer sea wallpaper", "Blurry pic → sharp HD lock screen.", "blurry")),
+  ("114-kitten-wall", A("kitten", "Clover kitten lock screen", "No stretching. Just a perfect fit.", "stretched")),
+  ("115-dog1-wall", A("dog1", "Tulip pup wallpaper", "Fitted edge to edge, no cropping.", "stretched")),
+  ("116-dog2-wall", A("dog2", "Cap dog lock screen", "Low quality pic → HD phone wallpaper.", "blurry")),
+  ("117-monkey2-wall", A("monkey2", "Hoodie monkey wallpaper", "The whole photo on your lock screen.", "cropped")),
+  ("118-monkey3-wall", A("monkey3", "Sunset monkey lock screen", "Keep the whole sunset, not a zoomed crop.", "zoomed")),
+  ("119-cat2-wall", A("cat2", "Car cat lock screen", "Any photo, fitted to your exact phone.", "cropped")),
+  ("120-slothberry-crop", B("slothberry", "Stop your phone cropping your pets", "Left: what your phone does. Right: Pawlo.", "crop")),
+  ("121-dog3-crop", B("dog3", "Your phone crops your photos. Here's the fix", "Keep the whole picture on your lock screen.", "crop")),
+  ("122-cat3-crop", B("cat3", "No more cut-off lock screens", "Pawlo fills every corner without cropping.", "crop")),
+  ("123-samoyed-crop", B("samoyed", "Keep the whole photo, every time", "Cropped vs fitted, same photo.", "crop")),
+]
+if __name__ == "__main__" and sys.argv[1:2] == ["more"]:
+    pass
