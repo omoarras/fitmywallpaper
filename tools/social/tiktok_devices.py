@@ -77,3 +77,52 @@ if __name__ == "__main__":
     for n, f in [("tt1-ipad-pov", v1), ("tt2-macbook", v2), ("tt3-rate-laptops", v3), ("tt4-phone-ipad", v4)]:
         build(n, f())
     print("done")
+
+POLA = lambda n, w=300, lab="original": f'<div class="pola" style="position:relative;transform:rotate(-5deg);margin-top:30px"><div style="width:{w}px;height:{w}px;background-image:url({SRC(n)})"></div><span>{lab}</span></div>'
+CSS += """.pola{background:#fff;padding:14px 14px 50px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.pola div{background-size:cover;background-position:center}.pola span{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:Kalam;font-weight:700;font-size:30px;color:#C0392B}
+.tagbig{font-family:Kalam;font-weight:700;font-size:110px;margin-top:24px}"""
+
+def v5():
+    hook = "Stop doing this to your iPad wallpaper 😭"
+    s = []
+    for n in ["kitten", "dogapple"]:
+        s += [(scene(hook, ipad(bad_style("zoom", SRC(n), "50% 45%"), 720), 500, "Pinch-zoomed ❌", "x"), 1.5, "wiperight"),
+              (scene(hook, ipad(IPAD(n), 720), 500, "Do this instead ✅"), 1.6, "fade")]
+    return s + [(endcard("Fit it to your exact iPad"), 2.4, None)]
+
+def v6():
+    hook = "Guess what this wallpaper used to be 👀"
+    s = []
+    for n, dev in [("cat2", "lap"), ("catcliff", "ipad"), ("bridge", "lap")]:
+        d = laptop(LAP(n), 960) if dev == "lap" else ipad(IPAD(n), 620)
+        s += [(scene(hook, d, 560), 1.4, "fade"),
+              (scene(hook, d + POLA(n), 470, "wait WHAT 😳"), 1.7, "slideleft")]
+    return s + [(endcard("Any photo → any screen"), 2.4, None)]
+
+def v7():
+    hook = "Which iPad wallpaper are you? 🤔"
+    s = []
+    for n, lab in [("samoyed", "Calm 🌊"), ("kitten", "Cozy 🐱"), ("dogapple", "Happy 🐶"), ("sloths", "Cuddly 🦥"), ("catcliff", "Dreamy 🌅")]:
+        s.append((scene(hook, ipad(IPAD(n), 720), 500, lab), 1.3, "slideleft"))
+    return s + [(endcard("Make yours from any photo"), 2.4, None)]
+
+def v8():
+    hook = "Desk setup glow-up ✨"
+    s = []
+    for n in ["cat2", "street"]:
+        s += [(scene(hook, laptop(f"background:#000 url({SRC(n)}) center/contain no-repeat", 980), 640, "Before", "x"), 1.4, "circleopen"),
+              (scene(hook, laptop(LAP(n), 980), 640, "After ✨"), 1.7, "fade")]
+    return s + [(endcard("Glow up your laptop wallpaper"), 2.4, None)]
+
+def v9():
+    hook = "3 phone pics that became laptop wallpapers"
+    s = []
+    for i, n in enumerate(["car", "cat", "bridge"]):
+        num = f'<div class="tagbig ok">{3-i}</div>'
+        s += [(scene(hook, num + phone(f"background-image:url({SRC(n)});background-size:cover;background-position:center", 330), 470), 1.1, "zoomin"),
+              (scene(hook, num + laptop(LAP(n), 980), 520), 1.6, "fade")]
+    return s + [(endcard("Phone photo → laptop wallpaper"), 2.4, None)]
+
+if __name__ == "__main__":
+    pass
