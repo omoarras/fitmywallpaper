@@ -7,11 +7,13 @@ function verify(raw, h, secret) {
   const id = h.get("webhook-id"), ts = h.get("webhook-timestamp"), sigs = h.get("webhook-signature") || "";
   if (!id || !ts) return false;
   if (Math.abs(Date.now() / 1000 - Number(ts)) > 600) return false;
-  const key = secret.startsWith("whsec_") ? Buffer.from(secret.slice(6), "base64") : Buffer.from(secret, "utf8");
-  const expected = crypto.createHmac("sha256", key).update(`${id}.${ts}.${raw}`).digest();
-  return sigs.split(" ").some((part) => {
-    const sig = Buffer.from(part.split(",")[1] || "", "base64");
-    return sig.length === expected.length && crypto.timingSafeEqual(sig, expected);
+  // Polar's SDK signs with the secret's raw bytes; plain Standard Webhooks uses base64 after "whsec_". Accept either.
+  const keys = [Buffer.from(secret, "utf8")];
+  if (secret.startsWith("whsec_")) keys.push(Buffer.from(secret.slice(6), "base64"));
+  const given = sigs.split(" ").map((part) => Buffer.from(part.split(",")[1] || "", "base64"));
+  return keys.some((key) => {
+    const expected = crypto.createHmac("sha256", key).update(`${id}.${ts}.${raw}`).digest();
+    return given.some((sig) => sig.length === expected.length && crypto.timingSafeEqual(sig, expected));
   });
 }
 
