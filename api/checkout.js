@@ -9,6 +9,28 @@ export async function GET(request) {
   if (!s) return json({ error: "Please sign in first." }, 401);
   const pack = new URL(request.url).searchParams.get("pack");
 
+  const creemProduct = process.env[`CREEM_PRODUCT_${pack}`];
+  if (process.env.CREEM_API_KEY && creemProduct) {
+    const api = process.env.CREEM_API_KEY.startsWith("creem_test_") ? "https://test-api.creem.io" : "https://api.creem.io";
+    const r = await fetch(`${api}/v1/checkouts`, {
+      method: "POST",
+      headers: { "x-api-key": process.env.CREEM_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product_id: creemProduct,
+        request_id: `${s.sub}-${Date.now()}`,
+        customer: s.email ? { email: s.email } : undefined,
+        metadata: { user_id: s.sub, pack: String(pack) },
+        success_url: "https://www.pawlowallpaper.com/thanks/",
+      }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.checkout_url) {
+      console.error("Creem checkout failed", r.status, JSON.stringify(j).slice(0, 500));
+      return json({ error: "Checkout is busy, please try again in a minute." }, 502);
+    }
+    return json({ url: j.checkout_url });
+  }
+
   const polarProduct = process.env[`POLAR_PRODUCT_${pack}`];
   if (process.env.POLAR_ACCESS_TOKEN && polarProduct) {
     const r = await fetch(`${POLAR_API()}/v1/checkouts/`, {
